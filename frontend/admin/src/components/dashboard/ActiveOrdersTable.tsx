@@ -1,4 +1,4 @@
-import { ArrowRight, Badge } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 import {
   Card,
@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/card";
 
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -32,8 +33,11 @@ export default function ActiveOrdersTable() {
     const fetchOrders = async () => {
       try {
         const response = await getOrders();
-
-        setOrders(response.data.data.data);
+        const orderList =
+          response.data.data.orders ||
+          (response.data.data as any).data ||
+          [];
+        setOrders(orderList);
       } catch (error) {
         console.error("Failed to fetch active orders:", error);
       }
@@ -46,7 +50,8 @@ export default function ActiveOrdersTable() {
     .filter(
       (order) =>
         order.service_status === "WAITING" ||
-        order.service_status === "WASHING",
+        order.service_status === "CONFIRMED" ||
+        order.service_status === "IN_PROGRESS",
     )
     .sort((a, b) => {
       if (!a.order_date) return 1;
@@ -58,6 +63,37 @@ export default function ActiveOrdersTable() {
     })
     .slice(0, 5);
 
+  const getStatusBadge = (status: string | null | undefined) => {
+    switch (status) {
+      case "WAITING":
+        return (
+          <Badge className="border-yellow-200 bg-yellow-100 text-yellow-800 hover:bg-yellow-100">
+            Waiting
+          </Badge>
+        );
+      case "CONFIRMED":
+        return (
+          <Badge className="border-purple-200 bg-purple-100 text-purple-800 hover:bg-purple-100">
+            Confirmed
+          </Badge>
+        );
+      case "IN_PROGRESS":
+        return (
+          <Badge className="border-blue-200 bg-blue-100 text-blue-800 hover:bg-blue-100">
+            In Progress
+          </Badge>
+        );
+      case "COMPLETED":
+        return (
+          <Badge className="border-green-200 bg-green-100 text-green-800 hover:bg-green-100">
+            Completed
+          </Badge>
+        );
+      default:
+        return <Badge variant="outline">{status ?? "-"}</Badge>;
+    }
+  };
+
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
@@ -65,7 +101,7 @@ export default function ActiveOrdersTable() {
           <CardTitle>Active Orders</CardTitle>
 
           <CardDescription>
-            Orders that are currently being processed.
+            Orders that are currently waiting or being processed.
           </CardDescription>
         </div>
 
@@ -124,21 +160,7 @@ export default function ActiveOrdersTable() {
 
                     <TableCell>{order.staffs?.name ?? "-"}</TableCell>
 
-                    <TableCell>
-                      <Badge
-                        className={
-                          order.service_status === "WAITING"
-                            ? "border-yellow-200 bg-yellow-100 text-yellow-800 hover:bg-yellow-100"
-                            : order.service_status === "WASHING"
-                              ? "border-blue-200 bg-blue-100 text-blue-800 hover:bg-blue-100"
-                              : order.service_status === "COMPLETED"
-                                ? "border-green-200 bg-green-100 text-green-800 hover:bg-green-100"
-                                : ""
-                        }
-                      >
-                        {order.service_status}
-                      </Badge>
-                    </TableCell>
+                    <TableCell>{getStatusBadge(order.service_status)}</TableCell>
                   </TableRow>
                 ))
               )}

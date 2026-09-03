@@ -14,7 +14,11 @@ export default function QuickStatus() {
       try {
         const response = await getOrders();
 
-        setOrders(response.data.data.data);
+        const orderList =
+          response.data.data.orders ||
+          (response.data.data as any).data ||
+          [];
+        setOrders(orderList);
       } catch (error) {
         console.error("Failed to fetch quick status:", error);
       }
@@ -31,8 +35,8 @@ export default function QuickStatus() {
     (order) => order.service_status === "WAITING",
   ).length;
 
-  const washing = orders.filter(
-    (order) => order.service_status === "WASHING",
+  const inProgress = orders.filter(
+    (order) => order.service_status === "IN_PROGRESS",
   ).length;
 
   const completed = orders.filter(
@@ -50,8 +54,8 @@ export default function QuickStatus() {
       icon: Clock3,
     },
     {
-      label: "Washing",
-      value: washing,
+      label: "In Progress",
+      value: inProgress,
       icon: Droplets,
     },
     {

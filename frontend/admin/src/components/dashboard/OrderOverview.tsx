@@ -33,7 +33,11 @@ export default function OrderOverview() {
       try {
         const response = await getOrders();
 
-        setOrders(response.data.data.data);
+        const orderList =
+          response.data.data.orders ||
+          (response.data.data as any).data ||
+          [];
+        setOrders(orderList);
       } catch (error) {
         console.error("Failed to fetch order overview:", error);
       }

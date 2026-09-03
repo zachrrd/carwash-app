@@ -18,7 +18,11 @@ export default function SummarySection() {
       try {
         const response = await getOrders();
 
-        setOrders(response.data.data.data);
+        const orderList =
+          response.data.data.orders ||
+          (response.data.data as any).data ||
+          [];
+        setOrders(orderList);
       } catch (error) {
         console.error("Failed to fetch dashboard orders:", error);
       }
@@ -45,11 +49,11 @@ export default function SummarySection() {
   });
 
   // ==========================================
-  // WASHING NOW
+  // WASHING / IN PROGRESS NOW
   // ==========================================
 
-  const washingNow = todayOrders.filter(
-    (order) => order.service_status === "WASHING",
+  const inProgressNow = todayOrders.filter(
+    (order) => order.service_status === "IN_PROGRESS",
   ).length;
 
   // ==========================================
@@ -83,8 +87,8 @@ export default function SummarySection() {
       icon: Car,
     },
     {
-      title: "Washing Now",
-      value: washingNow,
+      title: "In Progress",
+      value: inProgressNow,
       description: `${
         todayOrders.filter((order) => order.service_status === "WAITING").length
       } waiting`,
