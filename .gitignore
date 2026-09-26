@@ -35,6 +35,7 @@ web-build/
 
 # Uploads and temporary files
 uploads/
+mobile/ # The mobile app is maintained in its own repository
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
