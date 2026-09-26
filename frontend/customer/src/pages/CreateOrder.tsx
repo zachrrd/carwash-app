@@ -15,8 +15,9 @@ import {
 import { useAuth } from "@/context/AuthContext";
 import { getMyVehicles, createMyVehicle } from "@/services/vehicle.service";
 import { getServices } from "@/services/service.service";
-import { createOrder } from "@/services/order.service";
+import { createOrder, getActiveOrder } from "@/services/order.service";
 
+import type { ActiveOrder } from "@/services/order.service";
 import type { Vehicle } from "@/types/vehicle";
 import type { Service } from "@/types/service";
 
@@ -44,13 +45,64 @@ import {
 
 interface SelectedServiceItem {
   service: Service;
-  qty: number;
 }
 
 const formatRupiah = (value: number | string) => {
   const amount = Number(value);
-  if (Number.isNaN(amount)) return "Rp 0";
+
+  if (Number.isNaN(amount)) {
+    return "Rp 0";
+  }
+
   return `Rp ${amount.toLocaleString("id-ID")}`;
+};
+
+const getErrorMessage = (err: unknown, fallback: string) => {
+  if (typeof err === "object" && err !== null && "response" in err) {
+    const response = (
+      err as {
+        response?: {
+          data?: {
+            message?: string;
+          };
+        };
+      }
+    ).response;
+
+    return response?.data?.message || fallback;
+  }
+
+  if (err instanceof Error) {
+    return err.message || fallback;
+  }
+
+  return fallback;
+};
+
+const getActiveStatusLabel = (status: ActiveOrder["service_status"]) => {
+  switch (status) {
+    case "WAITING":
+      return "Menunggu Konfirmasi";
+    case "CONFIRMED":
+      return "Dikonfirmasi";
+    case "IN_PROGRESS":
+      return "Sedang Dicuci";
+    default:
+      return status || "-";
+  }
+};
+
+const getActiveStatusClass = (status: ActiveOrder["service_status"]) => {
+  switch (status) {
+    case "WAITING":
+      return "border-amber-200 bg-amber-50 text-amber-700";
+    case "CONFIRMED":
+      return "border-blue-200 bg-blue-50 text-blue-700";
+    case "IN_PROGRESS":
+      return "border-orange-200 bg-orange-50 text-[#FF5412]";
+    default:
+      return "border-slate-200 bg-slate-50 text-slate-700";
+  }
 };
 
 export default function CreateOrder() {
@@ -60,19 +112,20 @@ export default function CreateOrder() {
 
   const { user } = useAuth();
 
-  // Data states
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [services, setServices] = useState<Service[]>([]);
+  const [activeOrder, setActiveOrder] = useState<ActiveOrder | null>(null);
+
   const [loadingData, setLoadingData] = useState(true);
 
-  // Form states
   const [selectedVehicleId, setSelectedVehicleId] = useState<number | null>(
     null,
   );
+
   const [selectedItems, setSelectedItems] = useState<SelectedServiceItem[]>([]);
+
   const [checkInTime, setCheckInTime] = useState<string>("");
 
-  // Add vehicle modal states
   const [isAddVehicleOpen, setIsAddVehicleOpen] = useState(false);
   const [newPlateNumber, setNewPlateNumber] = useState("");
   const [newBrand, setNewBrand] = useState("");
@@ -80,82 +133,116 @@ export default function CreateOrder() {
   const [savingVehicle, setSavingVehicle] = useState(false);
   const [vehicleError, setVehicleError] = useState<string | null>(null);
 
-  // Submission state
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
-  // Load initial vehicles and services
   useEffect(() => {
+    let cancelled = false;
+
     const fetchData = async () => {
       setLoadingData(true);
+      setFormError(null);
+
       try {
+        const currentActiveOrder = await getActiveOrder();
+
+        if (cancelled) {
+          return;
+        }
+
+        if (currentActiveOrder) {
+          setActiveOrder(currentActiveOrder);
+          setLoadingData(false);
+          return;
+        }
+
         const [fetchedVehicles, servicesRes] = await Promise.all([
           getMyVehicles(),
-          getServices({ status: "ACTIVE", limit: 100 }),
+          getServices({
+            status: "ACTIVE",
+            limit: 100,
+          }),
         ]);
 
+        if (cancelled) {
+          return;
+        }
+
         setVehicles(fetchedVehicles);
+
         if (fetchedVehicles.length > 0) {
           setSelectedVehicleId(fetchedVehicles[0].id);
         }
 
         const activeServices = servicesRes.services || [];
+
         setServices(activeServices);
 
-        // Pre-select service from URL query if provided
         if (preselectedServiceId) {
           const targetService = activeServices.find(
-            (s) => s.id === Number(preselectedServiceId),
+            (service) => service.id === Number(preselectedServiceId),
           );
+
           if (targetService) {
-            setSelectedItems([{ service: targetService, qty: 1 }]);
+            setSelectedItems([
+              {
+                service: targetService,
+              },
+            ]);
           }
         }
-      } catch (err) {
-        console.error("Failed to fetch order prerequisites:", err);
+      } catch (err: unknown) {
+        if (!cancelled) {
+          setFormError(getErrorMessage(err, "Gagal memuat data pemesanan."));
+        }
       } finally {
-        setLoadingData(false);
+        if (!cancelled) {
+          setLoadingData(false);
+        }
       }
     };
 
-    fetchData();
+    void fetchData();
+
+    return () => {
+      cancelled = true;
+    };
   }, [preselectedServiceId]);
 
-  // Handle service selection toggle / qty update
+  const selectedVehicle = vehicles.find(
+    (vehicle) => vehicle.id === selectedVehicleId,
+  );
+
   const handleToggleService = (service: Service) => {
     setSelectedItems((prev) => {
-      const existing = prev.find((item) => item.service.id === service.id);
+      const existing = prev.some((item) => item.service.id === service.id);
+
       if (existing) {
         return prev.filter((item) => item.service.id !== service.id);
-      } else {
-        return [...prev, { service, qty: 1 }];
       }
-    });
-  };
 
-  const handleUpdateQty = (serviceId: number, delta: number) => {
-    setSelectedItems((prev) =>
-      prev
-        .map((item) => {
-          if (item.service.id === serviceId) {
-            const nextQty = item.qty + delta;
-            return nextQty > 0 ? { ...item, qty: nextQty } : null;
-          }
-          return item;
-        })
-        .filter((item): item is SelectedServiceItem => item !== null),
-    );
+      return [
+        ...prev,
+        {
+          service,
+        },
+      ];
+    });
+
+    setFormError(null);
   };
 
   const handleSaveVehicle = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    setVehicleError(null);
+
     if (!newPlateNumber.trim() || !newBrand.trim() || !newModel.trim()) {
       setVehicleError("Semua data kendaraan wajib diisi.");
       return;
     }
 
     setSavingVehicle(true);
-    setVehicleError(null);
 
     try {
       const created = await createMyVehicle({
@@ -167,44 +254,37 @@ export default function CreateOrder() {
       setVehicles((prev) => [created, ...prev]);
       setSelectedVehicleId(created.id);
       setIsAddVehicleOpen(false);
+
       setNewPlateNumber("");
       setNewBrand("");
       setNewModel("");
+      setVehicleError(null);
     } catch (err: unknown) {
-      if (typeof err === "object" && err !== null && "response" in err) {
-        const response = (
-          err as {
-            response?: {
-              data?: {
-                message?: string;
-              };
-            };
-          }
-        ).response;
+      const message = getErrorMessage(err, "Gagal menambahkan kendaraan.");
 
-        const message = response?.data?.message;
-
-        console.error(message);
-      }
+      setVehicleError(message);
     } finally {
       setSavingVehicle(false);
     }
   };
 
-  // Calculations
   const totalAmount = selectedItems.reduce(
-    (sum, item) => sum + Number(item.service.price) * item.qty,
+    (sum, item) => sum + Number(item.service.price),
     0,
   );
 
   const totalDuration = selectedItems.reduce(
-    (sum, item) => sum + item.service.duration * item.qty,
+    (sum, item) => sum + item.service.duration,
     0,
   );
 
-  // Submit order handler
   const handleSubmitOrder = async () => {
     setFormError(null);
+
+    if (activeOrder) {
+      setFormError(`Anda masih memiliki pesanan aktif #${activeOrder.id}.`);
+      return;
+    }
 
     if (!selectedVehicleId) {
       setFormError("Silakan pilih kendaraan terlebih dahulu.");
@@ -223,31 +303,25 @@ export default function CreateOrder() {
         vehicle_id: selectedVehicleId,
         items: selectedItems.map((item) => ({
           service_id: item.service.id,
-          qty: item.qty,
+          qty: 1,
         })),
-        ...(checkInTime ? { check_in_time: checkInTime } : {}),
+        ...(checkInTime
+          ? {
+              check_in_time: checkInTime,
+            }
+          : {}),
       };
 
       const createdOrder = await createOrder(payload);
 
-      // Redirect to Order Detail of newly created order
       navigate(`/orders/${createdOrder.id}`);
     } catch (err: unknown) {
-      if (typeof err === "object" && err !== null && "response" in err) {
-        const response = (
-          err as {
-            response?: {
-              data?: {
-                message?: string;
-              };
-            };
-          }
-        ).response;
+      const message = getErrorMessage(
+        err,
+        "Gagal membuat pesanan. Silakan coba lagi.",
+      );
 
-        const message = response?.data?.message;
-
-        console.error(message);
-      }
+      setFormError(message);
     } finally {
       setSubmitting(false);
     }
@@ -260,20 +334,161 @@ export default function CreateOrder() {
           <Skeleton className="h-8 w-64 rounded-xl" />
           <Skeleton className="h-4 w-96 rounded-lg" />
         </div>
+
         <div className="grid gap-6 lg:grid-cols-3">
           <div className="space-y-6 lg:col-span-2">
             <Skeleton className="h-48 w-full rounded-2xl" />
             <Skeleton className="h-72 w-full rounded-2xl" />
           </div>
+
           <Skeleton className="h-96 w-full rounded-2xl" />
         </div>
       </div>
     );
   }
 
+  if (activeOrder) {
+    return (
+      <div className="space-y-8 pb-12">
+        <div>
+          <Badge
+            variant="outline"
+            className="mb-2 border-orange-200 bg-orange-50 text-[#FF5412]"
+          >
+            Pesanan Aktif
+          </Badge>
+
+          <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">
+            Kamu Masih Memiliki Pesanan Aktif
+          </h1>
+
+          <p className="mt-1 text-sm text-slate-500">
+            Selesaikan pesanan sebelumnya sebelum membuat pesanan baru.
+          </p>
+        </div>
+
+        <Card className="mx-auto max-w-2xl overflow-hidden rounded-2xl border-slate-200 shadow-sm">
+          <CardHeader className="border-b border-slate-100 bg-slate-50/60 p-5 sm:p-6">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                  Booking ID
+                </span>
+
+                <h2 className="text-2xl font-extrabold text-slate-900">
+                  #{activeOrder.id}
+                </h2>
+              </div>
+
+              <Badge
+                variant="outline"
+                className={`w-fit font-bold ${getActiveStatusClass(
+                  activeOrder.service_status,
+                )}`}
+              >
+                {getActiveStatusLabel(activeOrder.service_status)}
+              </Badge>
+            </div>
+          </CardHeader>
+
+          <CardContent className="space-y-6 p-5 sm:p-6">
+            {activeOrder.vehicles && (
+              <div className="flex items-center gap-4 rounded-2xl bg-slate-50 p-4">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white text-[#FF5412] shadow-sm">
+                  <Car className="h-6 w-6" />
+                </div>
+
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                    Kendaraan
+                  </p>
+
+                  <p className="mt-1 text-base font-bold text-slate-900">
+                    {activeOrder.vehicles.brand} {activeOrder.vehicles.model}
+                  </p>
+
+                  <p className="text-sm font-semibold text-slate-500">
+                    {activeOrder.vehicles.plate_number}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="rounded-xl border border-slate-200 p-4">
+                <div className="flex items-center gap-2 text-slate-400">
+                  <Clock className="h-4 w-4" />
+
+                  <span className="text-xs font-semibold">Check-In</span>
+                </div>
+
+                <p className="mt-2 text-sm font-bold text-slate-900">
+                  {activeOrder.check_in_time || "Tidak ditentukan"}
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-slate-200 p-4">
+                <div className="flex items-center gap-2 text-slate-400">
+                  <ShieldCheck className="h-4 w-4" />
+
+                  <span className="text-xs font-semibold">Pembayaran</span>
+                </div>
+
+                <p className="mt-2 text-sm font-bold text-slate-900">
+                  {activeOrder.payment_status === "PAID"
+                    ? "Sudah Dibayar"
+                    : "Belum Dibayar"}
+                </p>
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-orange-100 bg-orange-50/50 p-4">
+              <div className="flex items-start gap-3">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-orange-100 text-[#FF5412]">
+                  <AlertCircle className="h-5 w-5" />
+                </div>
+
+                <div>
+                  <p className="text-sm font-bold text-slate-900">
+                    Belum bisa membuat pesanan baru
+                  </p>
+
+                  <p className="mt-1 text-xs leading-relaxed text-slate-600">
+                    Kamu hanya dapat memiliki satu pesanan aktif dalam satu
+                    waktu. Setelah pesanan #{activeOrder.id} selesai atau
+                    dibatalkan, kamu dapat membuat pesanan baru.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <Button
+                type="button"
+                onClick={() => navigate(`/orders/${activeOrder.id}`)}
+                className="h-11 flex-1 rounded-xl bg-slate-900 text-sm font-bold text-white hover:bg-[#FF5412]"
+              >
+                Lihat Detail Pesanan
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => navigate("/orders")}
+                className="h-11 flex-1 rounded-xl border-slate-200 text-sm font-bold"
+              >
+                Lihat Semua Pesanan
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8 pb-12">
-      {/* Header */}
       <div>
         <Badge
           variant="outline"
@@ -281,9 +496,11 @@ export default function CreateOrder() {
         >
           Booking Online
         </Badge>
+
         <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">
           Buat Pesanan Cuci Mobil
         </h1>
+
         <p className="mt-1 text-sm text-slate-500">
           Pilih kendaraan dan layanan yang kamu inginkan, lalu konfirmasi
           pesanan dengan cepat.
@@ -293,16 +510,13 @@ export default function CreateOrder() {
       {formError && (
         <div className="flex items-center gap-3 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
           <AlertCircle className="h-5 w-5 shrink-0 text-red-600" />
+
           <p className="font-medium">{formError}</p>
         </div>
       )}
 
       <div className="grid gap-8 lg:grid-cols-3">
-        {/* ========================================================
-            LEFT COLUMN (Steps 1, 2, 3)
-        ======================================================== */}
         <div className="space-y-6 lg:col-span-2">
-          {/* STEP 1: Pilih Kendaraan */}
           <Card className="rounded-2xl border-slate-200 shadow-sm">
             <CardHeader className="p-5 pb-3 sm:p-6 sm:pb-4">
               <div className="flex items-center justify-between">
@@ -310,10 +524,12 @@ export default function CreateOrder() {
                   <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-orange-100 text-[#FF5412]">
                     <Car className="h-5 w-5" />
                   </div>
+
                   <div>
                     <CardTitle className="text-base font-bold text-slate-900">
                       1. Pilih Kendaraan
                     </CardTitle>
+
                     <CardDescription className="text-xs">
                       Pilih mobil yang akan dicuci
                     </CardDescription>
@@ -324,7 +540,10 @@ export default function CreateOrder() {
                   type="button"
                   variant="outline"
                   size="sm"
-                  onClick={() => setIsAddVehicleOpen(true)}
+                  onClick={() => {
+                    setVehicleError(null);
+                    setIsAddVehicleOpen(true);
+                  }}
                   className="rounded-xl border-slate-200 text-xs font-semibold hover:border-orange-200 hover:bg-orange-50 hover:text-[#FF5412]"
                 >
                   <Plus className="mr-1.5 h-3.5 w-3.5" />
@@ -337,15 +556,21 @@ export default function CreateOrder() {
               {vehicles.length === 0 ? (
                 <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50/50 p-6 text-center">
                   <Car className="mx-auto h-8 w-8 text-slate-400" />
+
                   <p className="mt-2 text-sm font-semibold text-slate-700">
                     Belum ada kendaraan tersimpan
                   </p>
+
                   <p className="text-xs text-slate-500">
                     Tambahkan kendaraan kamu untuk melanjutkan pemesanan.
                   </p>
+
                   <Button
                     type="button"
-                    onClick={() => setIsAddVehicleOpen(true)}
+                    onClick={() => {
+                      setVehicleError(null);
+                      setIsAddVehicleOpen(true);
+                    }}
                     className="mt-4 rounded-xl bg-[#FF5412] px-4 text-xs font-bold text-white hover:bg-orange-600"
                   >
                     <Plus className="mr-1.5 h-3.5 w-3.5" />
@@ -356,10 +581,14 @@ export default function CreateOrder() {
                 <div className="grid gap-3 sm:grid-cols-2">
                   {vehicles.map((v) => {
                     const isSelected = selectedVehicleId === v.id;
+
                     return (
                       <div
                         key={v.id}
-                        onClick={() => setSelectedVehicleId(v.id)}
+                        onClick={() => {
+                          setSelectedVehicleId(v.id);
+                          setFormError(null);
+                        }}
                         className={`cursor-pointer rounded-2xl border p-4 transition-all duration-200 ${
                           isSelected
                             ? "border-[#FF5412] bg-orange-50/40 shadow-sm ring-2 ring-[#FF5412]/20"
@@ -371,6 +600,7 @@ export default function CreateOrder() {
                             <span className="inline-block rounded-lg bg-slate-900 px-2 py-0.5 text-xs font-bold tracking-wider text-white">
                               {v.plate_number}
                             </span>
+
                             <h4 className="mt-2 text-sm font-bold text-slate-900">
                               {v.brand} {v.model}
                             </h4>
@@ -396,19 +626,20 @@ export default function CreateOrder() {
             </CardContent>
           </Card>
 
-          {/* STEP 2: Pilih Layanan */}
           <Card className="rounded-2xl border-slate-200 shadow-sm">
             <CardHeader className="p-5 pb-3 sm:p-6 sm:pb-4">
               <div className="flex items-center gap-3">
                 <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-orange-100 text-[#FF5412]">
                   <Droplets className="h-5 w-5" />
                 </div>
+
                 <div>
                   <CardTitle className="text-base font-bold text-slate-900">
                     2. Pilih Layanan Cuci
                   </CardTitle>
+
                   <CardDescription className="text-xs">
-                    Pilih satu atau lebih paket layanan yang dibutuhkan
+                    Pilih satu atau lebih layanan yang dibutuhkan
                   </CardDescription>
                 </div>
               </div>
@@ -422,105 +653,93 @@ export default function CreateOrder() {
               ) : (
                 <div className="grid gap-3 sm:grid-cols-2">
                   {services.map((s) => {
-                    const selected = selectedItems.find(
-                      (i) => i.service.id === s.id,
+                    const isSelected = selectedItems.some(
+                      (item) => item.service.id === s.id,
                     );
-                    const isSelected = !!selected;
 
                     return (
                       <div
                         key={s.id}
-                        className={`flex flex-col justify-between rounded-2xl border p-4 transition-all duration-200 ${
+                        onClick={() => handleToggleService(s)}
+                        className={`cursor-pointer rounded-2xl border p-4 transition-all duration-200 ${
                           isSelected
                             ? "border-[#FF5412] bg-orange-50/40 shadow-sm ring-2 ring-[#FF5412]/20"
                             : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50/50"
                         }`}
                       >
-                        <div
-                          className="cursor-pointer"
-                          onClick={() => handleToggleService(s)}
-                        >
-                          <div className="flex items-start justify-between gap-2">
-                            <div>
-                              <h4 className="text-sm font-bold text-slate-900">
-                                {s.name}
-                              </h4>
-                              <div className="mt-1 flex items-center gap-2 text-xs text-slate-500">
-                                <span className="flex items-center gap-1">
-                                  <Clock className="h-3 w-3 text-slate-400" />
-                                  {s.duration} mnt
-                                </span>
-                              </div>
-                            </div>
+                        <div className="flex items-start justify-between gap-2">
+                          <div>
+                            <h4 className="text-sm font-bold text-slate-900">
+                              {s.name}
+                            </h4>
 
-                            <div
-                              className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border transition ${
-                                isSelected
-                                  ? "border-[#FF5412] bg-[#FF5412] text-white"
-                                  : "border-slate-300 bg-white"
-                              }`}
-                            >
-                              {isSelected && (
-                                <CheckCircle2 className="h-3.5 w-3.5" />
-                              )}
+                            <div className="mt-1 flex items-center gap-2 text-xs text-slate-500">
+                              <span className="flex items-center gap-1">
+                                <Clock className="h-3 w-3 text-slate-400" />
+                                {s.duration} mnt
+                              </span>
                             </div>
                           </div>
 
-                          <p className="mt-3 text-sm font-extrabold text-[#FF5412]">
-                            {formatRupiah(s.price)}
-                          </p>
+                          <div
+                            className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border transition ${
+                              isSelected
+                                ? "border-[#FF5412] bg-[#FF5412] text-white"
+                                : "border-slate-300 bg-white"
+                            }`}
+                          >
+                            {isSelected && (
+                              <CheckCircle2 className="h-3.5 w-3.5" />
+                            )}
+                          </div>
                         </div>
 
-                        {/* Quantity Counter if selected */}
-                        {isSelected && (
-                          <div className="mt-3 flex items-center justify-between border-t border-orange-200/60 pt-3">
-                            <span className="text-xs font-semibold text-slate-600">
-                              Jumlah
-                            </span>
-                            <div className="flex items-center gap-2">
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="icon"
-                                onClick={() => handleUpdateQty(s.id, -1)}
-                                className="h-7 w-7 rounded-lg border-slate-200 text-xs"
-                              >
-                                -
-                              </Button>
-                              <span className="min-w-5 text-center text-xs font-bold text-slate-900">
-                                {selected.qty}
-                              </span>
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="icon"
-                                onClick={() => handleUpdateQty(s.id, 1)}
-                                className="h-7 w-7 rounded-lg border-slate-200 text-xs"
-                              >
-                                +
-                              </Button>
-                            </div>
-                          </div>
-                        )}
+                        <div className="mt-3 flex items-center justify-between">
+                          <p className="text-sm font-extrabold text-[#FF5412]">
+                            {formatRupiah(s.price)}
+                          </p>
+
+                          {isSelected && (
+                            <Badge
+                              variant="outline"
+                              className="border-orange-200 bg-orange-50 text-[10px] font-bold text-[#FF5412]"
+                            >
+                              Dipilih · 1x
+                            </Badge>
+                          )}
+                        </div>
                       </div>
                     );
                   })}
                 </div>
               )}
+
+              <div className="mt-4 rounded-xl bg-slate-50 p-3 text-[11px] text-slate-500">
+                <p className="font-semibold text-slate-700">
+                  Informasi layanan
+                </p>
+
+                <p className="mt-0.5 leading-relaxed">
+                  Setiap layanan hanya dapat dipilih satu kali dalam satu
+                  pesanan. Jika layanan sudah dipilih, klik kembali untuk
+                  membatalkannya.
+                </p>
+              </div>
             </CardContent>
           </Card>
 
-          {/* STEP 3: Estimasi Waktu Kedatangan (Check-in) */}
           <Card className="rounded-2xl border-slate-200 shadow-sm">
             <CardHeader className="p-5 pb-3 sm:p-6 sm:pb-4">
               <div className="flex items-center gap-3">
                 <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-orange-100 text-[#FF5412]">
                   <Clock className="h-5 w-5" />
                 </div>
+
                 <div>
                   <CardTitle className="text-base font-bold text-slate-900">
                     3. Estimasi Waktu Kedatangan (Opsional)
                   </CardTitle>
+
                   <CardDescription className="text-xs">
                     Beri tahu staf kami jam berapa kamu berencana datang
                   </CardDescription>
@@ -536,6 +755,7 @@ export default function CreateOrder() {
                 >
                   Jam Check-In (Format 24 Jam e.g. 14:30)
                 </Label>
+
                 <Input
                   id="checkInTime"
                   type="time"
@@ -543,17 +763,15 @@ export default function CreateOrder() {
                   onChange={(e) => setCheckInTime(e.target.value)}
                   className="rounded-xl border-slate-200 text-sm focus-visible:ring-[#FF5412]"
                 />
+
                 <p className="text-[11px] text-slate-400">
-                  Jam operasional bengkel: 08:00 - 18:00 WIB
+                  Jam operasional carwash: 08:00 - 18:00 WIB
                 </p>
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* ========================================================
-            RIGHT COLUMN: Ringkasan Pesanan (Order Summary)
-        ======================================================== */}
         <div>
           <div className="sticky top-24 space-y-4">
             <Card className="rounded-2xl border-slate-200 shadow-sm">
@@ -561,23 +779,26 @@ export default function CreateOrder() {
                 <CardTitle className="text-base font-bold text-slate-900">
                   Ringkasan Pesanan
                 </CardTitle>
+
                 <CardDescription className="text-xs">
                   Periksa rincian pemesanan kamu
                 </CardDescription>
               </CardHeader>
 
               <CardContent className="space-y-4 p-5">
-                {/* Selected Customer Info */}
                 <div className="rounded-xl bg-slate-50 p-3 text-xs">
                   <div className="flex items-center justify-between text-slate-500">
                     <span>Pemesan:</span>
+
                     <span className="font-bold text-slate-900">
-                      {user?.name}
+                      {user?.name || "Customer"}
                     </span>
                   </div>
+
                   {user?.customer?.phone && (
                     <div className="mt-1 flex items-center justify-between text-slate-500">
                       <span>No. Telepon:</span>
+
                       <span className="font-semibold text-slate-700">
                         {user.customer.phone}
                       </span>
@@ -585,28 +806,22 @@ export default function CreateOrder() {
                   )}
                 </div>
 
-                {/* Selected Vehicle Info */}
-                {selectedVehicleId ? (
-                  (() => {
-                    const sel = vehicles.find(
-                      (v) => v.id === selectedVehicleId,
-                    );
-                    return sel ? (
-                      <div className="flex items-center gap-3 rounded-xl border border-slate-200/80 bg-white p-3">
-                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-orange-50 text-[#FF5412]">
-                          <Car className="h-4 w-4" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <p className="truncate text-xs font-bold text-slate-900">
-                            {sel.brand} {sel.model}
-                          </p>
-                          <p className="text-[11px] font-semibold text-slate-500">
-                            {sel.plate_number}
-                          </p>
-                        </div>
-                      </div>
-                    ) : null;
-                  })()
+                {selectedVehicle ? (
+                  <div className="flex items-center gap-3 rounded-xl border border-slate-200/80 bg-white p-3">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-orange-50 text-[#FF5412]">
+                      <Car className="h-4 w-4" />
+                    </div>
+
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-xs font-bold text-slate-900">
+                        {selectedVehicle.brand} {selectedVehicle.model}
+                      </p>
+
+                      <p className="text-[11px] font-semibold text-slate-500">
+                        {selectedVehicle.plate_number}
+                      </p>
+                    </div>
+                  </div>
                 ) : (
                   <p className="text-xs italic text-slate-400">
                     Belum memilih kendaraan
@@ -615,7 +830,6 @@ export default function CreateOrder() {
 
                 <Separator />
 
-                {/* Selected Services List */}
                 <div className="space-y-2.5">
                   <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
                     Layanan Dipilih ({selectedItems.length})
@@ -635,21 +849,22 @@ export default function CreateOrder() {
                           <p className="truncate font-semibold text-slate-800">
                             {item.service.name}
                           </p>
+
                           <p className="text-[11px] text-slate-400">
-                            {item.qty}x @ {formatRupiah(item.service.price)}
+                            1x @ {formatRupiah(item.service.price)}
                           </p>
                         </div>
+
                         <div className="flex items-center gap-2">
                           <span className="font-bold text-slate-900">
-                            {formatRupiah(
-                              Number(item.service.price) * item.qty,
-                            )}
+                            {formatRupiah(item.service.price)}
                           </span>
+
                           <button
                             type="button"
                             onClick={() => handleToggleService(item.service)}
                             className="text-slate-400 hover:text-red-500"
-                            title="Hapus"
+                            title="Hapus layanan"
                           >
                             <Trash2 className="h-3.5 w-3.5" />
                           </button>
@@ -661,13 +876,13 @@ export default function CreateOrder() {
 
                 <Separator />
 
-                {/* Totals */}
                 <div className="space-y-2">
                   <div className="flex items-center justify-between text-xs text-slate-500">
                     <span className="flex items-center gap-1.5">
                       <Clock className="h-3.5 w-3.5 text-slate-400" />
                       Estimasi Durasi Total:
                     </span>
+
                     <span className="font-semibold text-slate-800">
                       {totalDuration} Menit
                     </span>
@@ -675,6 +890,7 @@ export default function CreateOrder() {
 
                   <div className="flex items-center justify-between text-xs text-slate-500">
                     <span>Status Awal:</span>
+
                     <Badge
                       variant="outline"
                       className="border-orange-200 bg-orange-50 text-[10px] font-bold text-[#FF5412]"
@@ -687,13 +903,13 @@ export default function CreateOrder() {
                     <span className="text-sm font-bold text-slate-900">
                       Total Pembayaran:
                     </span>
+
                     <span className="text-lg font-extrabold text-[#FF5412]">
                       {formatRupiah(totalAmount)}
                     </span>
                   </div>
                 </div>
 
-                {/* Submit button */}
                 <Button
                   type="button"
                   onClick={handleSubmitOrder}
@@ -716,6 +932,7 @@ export default function CreateOrder() {
 
                 <div className="flex items-center gap-2 rounded-xl bg-slate-50 p-2.5 text-[11px] text-slate-500">
                   <ShieldCheck className="h-4 w-4 shrink-0 text-emerald-500" />
+
                   <span>
                     Pembayaran dapat dilakukan setelah pesanan dikonfirmasi oleh
                     kasir.
@@ -727,14 +944,26 @@ export default function CreateOrder() {
         </div>
       </div>
 
-      {/* Modal / Dialog Tambah Kendaraan Baru */}
-      <Dialog open={isAddVehicleOpen} onOpenChange={setIsAddVehicleOpen}>
+      <Dialog
+        open={isAddVehicleOpen}
+        onOpenChange={(open) => {
+          setIsAddVehicleOpen(open);
+
+          if (!open) {
+            setVehicleError(null);
+            setNewPlateNumber("");
+            setNewBrand("");
+            setNewModel("");
+          }
+        }}
+      >
         <DialogContent className="sm:max-w-[425px]">
           <form onSubmit={handleSaveVehicle}>
             <DialogHeader>
               <DialogTitle className="text-lg font-bold text-slate-900">
                 Tambah Kendaraan Baru
               </DialogTitle>
+
               <DialogDescription className="text-xs">
                 Masukkan identitas mobil yang ingin kamu daftarkan ke akun.
               </DialogDescription>
@@ -751,6 +980,7 @@ export default function CreateOrder() {
                 <Label htmlFor="plateNumber" className="text-xs font-semibold">
                   Nomor Plat (e.g. B 1234 ABC) *
                 </Label>
+
                 <Input
                   id="plateNumber"
                   placeholder="B 1234 ABC"
@@ -767,6 +997,7 @@ export default function CreateOrder() {
                 <Label htmlFor="brand" className="text-xs font-semibold">
                   Merek / Brand (e.g. Toyota, Honda) *
                 </Label>
+
                 <Input
                   id="brand"
                   placeholder="Toyota"
@@ -781,6 +1012,7 @@ export default function CreateOrder() {
                 <Label htmlFor="model" className="text-xs font-semibold">
                   Model / Seri (e.g. Avanza, Civic) *
                 </Label>
+
                 <Input
                   id="model"
                   placeholder="Avanza"
@@ -801,6 +1033,7 @@ export default function CreateOrder() {
               >
                 Batal
               </Button>
+
               <Button
                 type="submit"
                 disabled={savingVehicle}

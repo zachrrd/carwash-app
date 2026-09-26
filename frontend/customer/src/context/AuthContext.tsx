@@ -31,6 +31,7 @@ interface AuthContextType {
     phone: string;
   }) => Promise<void>;
   updateUser: (updatedUser: User) => void;
+  refreshUser: () => Promise<void>;
   logout: () => void;
   isAuthenticated: boolean;
 }
@@ -104,23 +105,53 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     void validateSession();
   }, []);
 
+  const refreshUser = async () => {
+    try {
+      const response = await api.get("/auth/me");
+      const currentUser = response.data.data;
+
+      if (currentUser && currentUser.role === "CUSTOMER") {
+        localStorage.setItem("user", JSON.stringify(currentUser));
+        setUser(currentUser);
+      }
+    } catch (err) {
+      console.error("Failed to refresh user:", err);
+    }
+  };
+
   const login = async (email: string, password: string) => {
     const response = await api.post("/auth/customer/login", {
       email,
       password,
     });
 
-    const { token: newToken, user: newUser } = response.data.data;
+    const {
+      token: newToken,
+      user: rawUser,
+      customer: rawCustomer,
+    } = response.data.data;
 
-    if (newUser.role !== "CUSTOMER") {
+    if (rawUser.role !== "CUSTOMER") {
       throw new Error("This account is not registered as a customer.");
     }
+
+    const newUser: User = {
+      ...rawUser,
+      customer:
+        rawUser.customer ??
+        (rawCustomer ? { id: rawCustomer.id, phone: rawCustomer.phone } : null),
+    };
 
     localStorage.setItem("token", newToken);
     localStorage.setItem("user", JSON.stringify(newUser));
 
     setToken(newToken);
     setUser(newUser);
+
+    // If customer phone is still missing, fetch /auth/me in background
+    if (!newUser.customer?.phone) {
+      void refreshUser();
+    }
   };
 
   const register = async (data: {
@@ -131,11 +162,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }) => {
     const response = await api.post("/auth/register", data);
 
-    const { token: newToken, user: newUser } = response.data.data;
+    const {
+      token: newToken,
+      user: rawUser,
+      customer: rawCustomer,
+    } = response.data.data;
 
-    if (newUser.role !== "CUSTOMER") {
+    if (rawUser.role !== "CUSTOMER") {
       throw new Error("Registration is only available for customers.");
     }
+
+    const newUser: User = {
+      ...rawUser,
+      customer:
+        rawUser.customer ??
+        (rawCustomer ? { id: rawCustomer.id, phone: rawCustomer.phone } : null),
+    };
 
     localStorage.setItem("token", newToken);
     localStorage.setItem("user", JSON.stringify(newUser));
@@ -166,6 +208,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         login,
         register,
         updateUser,
+        refreshUser,
         logout,
         isAuthenticated: !!token && user?.role === "CUSTOMER",
       }}

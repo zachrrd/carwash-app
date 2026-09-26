@@ -38,14 +38,20 @@ export type StaffsMinAggregateOutputType = {
   id: number | null
   name: string | null
   phone: string | null
-  status: string | null
+  status: $Enums.ActiveStatus | null
+  created_at: Date | null
+  updated_at: Date | null
+  deleted_at: Date | null
 }
 
 export type StaffsMaxAggregateOutputType = {
   id: number | null
   name: string | null
   phone: string | null
-  status: string | null
+  status: $Enums.ActiveStatus | null
+  created_at: Date | null
+  updated_at: Date | null
+  deleted_at: Date | null
 }
 
 export type StaffsCountAggregateOutputType = {
@@ -53,6 +59,9 @@ export type StaffsCountAggregateOutputType = {
   name: number
   phone: number
   status: number
+  created_at: number
+  updated_at: number
+  deleted_at: number
   _all: number
 }
 
@@ -70,6 +79,9 @@ export type StaffsMinAggregateInputType = {
   name?: true
   phone?: true
   status?: true
+  created_at?: true
+  updated_at?: true
+  deleted_at?: true
 }
 
 export type StaffsMaxAggregateInputType = {
@@ -77,6 +89,9 @@ export type StaffsMaxAggregateInputType = {
   name?: true
   phone?: true
   status?: true
+  created_at?: true
+  updated_at?: true
+  deleted_at?: true
 }
 
 export type StaffsCountAggregateInputType = {
@@ -84,6 +99,9 @@ export type StaffsCountAggregateInputType = {
   name?: true
   phone?: true
   status?: true
+  created_at?: true
+  updated_at?: true
+  deleted_at?: true
   _all?: true
 }
 
@@ -177,7 +195,10 @@ export type StaffsGroupByOutputType = {
   id: number
   name: string
   phone: string | null
-  status: string | null
+  status: $Enums.ActiveStatus | null
+  created_at: Date
+  updated_at: Date
+  deleted_at: Date | null
   _count: StaffsCountAggregateOutputType | null
   _avg: StaffsAvgAggregateOutputType | null
   _sum: StaffsSumAggregateOutputType | null
@@ -207,7 +228,10 @@ export type staffsWhereInput = {
   id?: Prisma.IntFilter<"staffs"> | number
   name?: Prisma.StringFilter<"staffs"> | string
   phone?: Prisma.StringNullableFilter<"staffs"> | string | null
-  status?: Prisma.StringNullableFilter<"staffs"> | string | null
+  status?: Prisma.EnumActiveStatusNullableFilter<"staffs"> | $Enums.ActiveStatus | null
+  created_at?: Prisma.DateTimeFilter<"staffs"> | Date | string
+  updated_at?: Prisma.DateTimeFilter<"staffs"> | Date | string
+  deleted_at?: Prisma.DateTimeNullableFilter<"staffs"> | Date | string | null
   orders?: Prisma.OrdersListRelationFilter
 }
 
@@ -216,6 +240,9 @@ export type staffsOrderByWithRelationInput = {
   name?: Prisma.SortOrder
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrderInput | Prisma.SortOrder
+  created_at?: Prisma.SortOrder
+  updated_at?: Prisma.SortOrder
+  deleted_at?: Prisma.SortOrderInput | Prisma.SortOrder
   orders?: Prisma.ordersOrderByRelationAggregateInput
 }
 
@@ -226,7 +253,10 @@ export type staffsWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.staffsWhereInput | Prisma.staffsWhereInput[]
   name?: Prisma.StringFilter<"staffs"> | string
   phone?: Prisma.StringNullableFilter<"staffs"> | string | null
-  status?: Prisma.StringNullableFilter<"staffs"> | string | null
+  status?: Prisma.EnumActiveStatusNullableFilter<"staffs"> | $Enums.ActiveStatus | null
+  created_at?: Prisma.DateTimeFilter<"staffs"> | Date | string
+  updated_at?: Prisma.DateTimeFilter<"staffs"> | Date | string
+  deleted_at?: Prisma.DateTimeNullableFilter<"staffs"> | Date | string | null
   orders?: Prisma.OrdersListRelationFilter
 }, "id">
 
@@ -235,6 +265,9 @@ export type staffsOrderByWithAggregationInput = {
   name?: Prisma.SortOrder
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrderInput | Prisma.SortOrder
+  created_at?: Prisma.SortOrder
+  updated_at?: Prisma.SortOrder
+  deleted_at?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.staffsCountOrderByAggregateInput
   _avg?: Prisma.staffsAvgOrderByAggregateInput
   _max?: Prisma.staffsMaxOrderByAggregateInput
@@ -249,13 +282,19 @@ export type staffsScalarWhereWithAggregatesInput = {
   id?: Prisma.IntWithAggregatesFilter<"staffs"> | number
   name?: Prisma.StringWithAggregatesFilter<"staffs"> | string
   phone?: Prisma.StringNullableWithAggregatesFilter<"staffs"> | string | null
-  status?: Prisma.StringNullableWithAggregatesFilter<"staffs"> | string | null
+  status?: Prisma.EnumActiveStatusNullableWithAggregatesFilter<"staffs"> | $Enums.ActiveStatus | null
+  created_at?: Prisma.DateTimeWithAggregatesFilter<"staffs"> | Date | string
+  updated_at?: Prisma.DateTimeWithAggregatesFilter<"staffs"> | Date | string
+  deleted_at?: Prisma.DateTimeNullableWithAggregatesFilter<"staffs"> | Date | string | null
 }
 
 export type staffsCreateInput = {
   name: string
   phone?: string | null
-  status?: string | null
+  status?: $Enums.ActiveStatus | null
+  created_at?: Date | string
+  updated_at?: Date | string
+  deleted_at?: Date | string | null
   orders?: Prisma.ordersCreateNestedManyWithoutStaffsInput
 }
 
@@ -263,14 +302,20 @@ export type staffsUncheckedCreateInput = {
   id?: number
   name: string
   phone?: string | null
-  status?: string | null
+  status?: $Enums.ActiveStatus | null
+  created_at?: Date | string
+  updated_at?: Date | string
+  deleted_at?: Date | string | null
   orders?: Prisma.ordersUncheckedCreateNestedManyWithoutStaffsInput
 }
 
 export type staffsUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.NullableEnumActiveStatusFieldUpdateOperationsInput | $Enums.ActiveStatus | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   orders?: Prisma.ordersUpdateManyWithoutStaffsNestedInput
 }
 
@@ -278,7 +323,10 @@ export type staffsUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.NullableEnumActiveStatusFieldUpdateOperationsInput | $Enums.ActiveStatus | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   orders?: Prisma.ordersUncheckedUpdateManyWithoutStaffsNestedInput
 }
 
@@ -286,25 +334,29 @@ export type staffsCreateManyInput = {
   id?: number
   name: string
   phone?: string | null
-  status?: string | null
+  status?: $Enums.ActiveStatus | null
+  created_at?: Date | string
+  updated_at?: Date | string
+  deleted_at?: Date | string | null
 }
 
 export type staffsUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.NullableEnumActiveStatusFieldUpdateOperationsInput | $Enums.ActiveStatus | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type staffsUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-}
-
-export type StaffsNullableScalarRelationFilter = {
-  is?: Prisma.staffsWhereInput | null
-  isNot?: Prisma.staffsWhereInput | null
+  status?: Prisma.NullableEnumActiveStatusFieldUpdateOperationsInput | $Enums.ActiveStatus | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type staffsCountOrderByAggregateInput = {
@@ -312,6 +364,9 @@ export type staffsCountOrderByAggregateInput = {
   name?: Prisma.SortOrder
   phone?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  created_at?: Prisma.SortOrder
+  updated_at?: Prisma.SortOrder
+  deleted_at?: Prisma.SortOrder
 }
 
 export type staffsAvgOrderByAggregateInput = {
@@ -323,6 +378,9 @@ export type staffsMaxOrderByAggregateInput = {
   name?: Prisma.SortOrder
   phone?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  created_at?: Prisma.SortOrder
+  updated_at?: Prisma.SortOrder
+  deleted_at?: Prisma.SortOrder
 }
 
 export type staffsMinOrderByAggregateInput = {
@@ -330,10 +388,22 @@ export type staffsMinOrderByAggregateInput = {
   name?: Prisma.SortOrder
   phone?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  created_at?: Prisma.SortOrder
+  updated_at?: Prisma.SortOrder
+  deleted_at?: Prisma.SortOrder
 }
 
 export type staffsSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
+}
+
+export type StaffsNullableScalarRelationFilter = {
+  is?: Prisma.staffsWhereInput | null
+  isNot?: Prisma.staffsWhereInput | null
+}
+
+export type NullableEnumActiveStatusFieldUpdateOperationsInput = {
+  set?: $Enums.ActiveStatus | null
 }
 
 export type staffsCreateNestedOneWithoutOrdersInput = {
@@ -355,14 +425,20 @@ export type staffsUpdateOneWithoutOrdersNestedInput = {
 export type staffsCreateWithoutOrdersInput = {
   name: string
   phone?: string | null
-  status?: string | null
+  status?: $Enums.ActiveStatus | null
+  created_at?: Date | string
+  updated_at?: Date | string
+  deleted_at?: Date | string | null
 }
 
 export type staffsUncheckedCreateWithoutOrdersInput = {
   id?: number
   name: string
   phone?: string | null
-  status?: string | null
+  status?: $Enums.ActiveStatus | null
+  created_at?: Date | string
+  updated_at?: Date | string
+  deleted_at?: Date | string | null
 }
 
 export type staffsCreateOrConnectWithoutOrdersInput = {
@@ -384,14 +460,20 @@ export type staffsUpdateToOneWithWhereWithoutOrdersInput = {
 export type staffsUpdateWithoutOrdersInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.NullableEnumActiveStatusFieldUpdateOperationsInput | $Enums.ActiveStatus | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type staffsUncheckedUpdateWithoutOrdersInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.NullableEnumActiveStatusFieldUpdateOperationsInput | $Enums.ActiveStatus | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 
@@ -430,6 +512,9 @@ export type staffsSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   name?: boolean
   phone?: boolean
   status?: boolean
+  created_at?: boolean
+  updated_at?: boolean
+  deleted_at?: boolean
   orders?: boolean | Prisma.staffs$ordersArgs<ExtArgs>
   _count?: boolean | Prisma.StaffsCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["staffs"]>
@@ -439,6 +524,9 @@ export type staffsSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
   name?: boolean
   phone?: boolean
   status?: boolean
+  created_at?: boolean
+  updated_at?: boolean
+  deleted_at?: boolean
 }, ExtArgs["result"]["staffs"]>
 
 export type staffsSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -446,6 +534,9 @@ export type staffsSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
   name?: boolean
   phone?: boolean
   status?: boolean
+  created_at?: boolean
+  updated_at?: boolean
+  deleted_at?: boolean
 }, ExtArgs["result"]["staffs"]>
 
 export type staffsSelectScalar = {
@@ -453,9 +544,12 @@ export type staffsSelectScalar = {
   name?: boolean
   phone?: boolean
   status?: boolean
+  created_at?: boolean
+  updated_at?: boolean
+  deleted_at?: boolean
 }
 
-export type staffsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "phone" | "status", ExtArgs["result"]["staffs"]>
+export type staffsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "phone" | "status" | "created_at" | "updated_at" | "deleted_at", ExtArgs["result"]["staffs"]>
 export type staffsInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   orders?: boolean | Prisma.staffs$ordersArgs<ExtArgs>
   _count?: boolean | Prisma.StaffsCountOutputTypeDefaultArgs<ExtArgs>
@@ -472,7 +566,10 @@ export type $staffsPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     id: number
     name: string
     phone: string | null
-    status: string | null
+    status: $Enums.ActiveStatus | null
+    created_at: Date
+    updated_at: Date
+    deleted_at: Date | null
   }, ExtArgs["result"]["staffs"]>
   composites: {}
 }
@@ -900,7 +997,10 @@ export interface staffsFieldRefs {
   readonly id: Prisma.FieldRef<"staffs", 'Int'>
   readonly name: Prisma.FieldRef<"staffs", 'String'>
   readonly phone: Prisma.FieldRef<"staffs", 'String'>
-  readonly status: Prisma.FieldRef<"staffs", 'String'>
+  readonly status: Prisma.FieldRef<"staffs", 'ActiveStatus'>
+  readonly created_at: Prisma.FieldRef<"staffs", 'DateTime'>
+  readonly updated_at: Prisma.FieldRef<"staffs", 'DateTime'>
+  readonly deleted_at: Prisma.FieldRef<"staffs", 'DateTime'>
 }
     
 

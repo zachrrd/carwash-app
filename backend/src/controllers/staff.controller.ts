@@ -8,21 +8,41 @@ export const getAllStaffs = async (
   next: NextFunction,
 ) => {
   try {
-    const page = Number(req.query.page) || 1;
-    const limit = Number(req.query.limit) || 10;
-
+    const page = Math.max(Number(req.query.page) || 1, 1);
+    const limit = Math.min(Math.max(Number(req.query.limit) || 10, 1), 100);
     const skip = (page - 1) * limit;
+
+    const search =
+      typeof req.query.search === "string"
+        ? req.query.search.trim()
+        : typeof req.query.q === "string"
+          ? req.query.q.trim()
+          : "";
+    const status = req.query.status as string | undefined;
+
+    const where: any = {
+      deleted_at: null,
+      ...(status &&
+        (status === "ACTIVE" || status === "INACTIVE") && { status }),
+      ...(search && {
+        OR: [
+          { name: { contains: search, mode: "insensitive" } },
+          { phone: { contains: search, mode: "insensitive" } },
+        ],
+      }),
+    };
 
     const [staffs, total] = await Promise.all([
       prisma.staffs.findMany({
         skip,
         take: limit,
+        where,
         orderBy: {
           id: "asc",
         },
       }),
 
-      prisma.staffs.count(),
+      prisma.staffs.count({ where }),
     ]);
 
     const totalPages = Math.ceil(total / limit);
@@ -57,15 +77,18 @@ export const getStaffById = async (
       return errorResponse(res, "Invalid staff id", 400);
     }
 
-    const staff = await prisma.staffs.findUnique({
-      where: { id },
+    const staff = await prisma.staffs.findFirst({
+      where: {
+        id,
+        deleted_at: null,
+      },
     });
 
     if (!staff) {
       return errorResponse(res, "Staff not found", 404);
     }
 
-    return successResponse(res, staff);
+    return successResponse(res, staff, "Staff retrieved successfully");
   } catch (err) {
     next(err);
   }
@@ -111,8 +134,11 @@ export const updateStaff = async (
 
     const { name, phone, status } = req.body;
 
-    const existingStaff = await prisma.staffs.findUnique({
-      where: { id },
+    const existingStaff = await prisma.staffs.findFirst({
+      where: {
+        id,
+        deleted_at: null,
+      },
     });
 
     if (!existingStaff) {
@@ -146,19 +172,81 @@ export const deleteStaff = async (
       return errorResponse(res, "Invalid staff id", 400);
     }
 
-    const existingStaff = await prisma.staffs.findUnique({
-      where: { id },
+    const existingStaff = await prisma.staffs.findFirst({
+      where: {
+        id,
+        deleted_at: null,
+      },
     });
 
     if (!existingStaff) {
       return errorResponse(res, "Staff not found", 404);
     }
 
-    await prisma.staffs.delete({
+    await prisma.staffs.update({
       where: { id },
+      data: {
+        deleted_at: new Date(),
+      },
     });
 
     return successResponse(res, null, "Staff deleted successfully");
+  } catch (err) {
+    next(err);
+  }
+};
+export const restoreStaff = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const id = Number(req.params.id);
+
+    if (isNaN(id)) {
+      return errorResponse(res, "Invalid staff id", 400);
+    }
+
+    const existingStaff = await prisma.staffs.findFirst({
+      where: {
+        id,
+        deleted_at: { not: null },
+      },
+    });
+
+    if (!existingStaff) {
+      return errorResponse(res, "Deleted staff not found", 404);
+    }
+
+    const staff = await prisma.staffs.update({
+      where: { id },
+      data: {
+        deleted_at: null,
+      },
+    });
+
+    return successResponse(res, staff, "Staff restored successfully");
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getDeletedStaffs = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const staffs = await prisma.staffs.findMany({
+      where: {
+        deleted_at: { not: null },
+      },
+      orderBy: {
+        deleted_at: "desc",
+      },
+    });
+
+    return successResponse(res, staffs, "Deleted staffs retrieved");
   } catch (err) {
     next(err);
   }

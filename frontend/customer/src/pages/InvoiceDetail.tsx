@@ -233,7 +233,7 @@ export default function InvoiceDetail() {
         >
           <Download className="mr-2 h-4 w-4" />
 
-          {downloading ? "Menyiapkan PDF..." : "Download Invoice"}
+          {downloading ? "Menyiapkan PDF..." : "Download PDF"}
         </Button>
       </div>
 
@@ -487,29 +487,6 @@ export default function InvoiceDetail() {
                   {formatPaymentDate(payment?.payment_date)}
                 </span>
               </div>
-            </CardContent>
-          </Card>
-
-          {/* Download */}
-          <Card className="rounded-2xl border-orange-100 bg-orange-50/50 shadow-sm">
-            <CardContent className="p-5">
-              <p className="text-sm font-bold text-slate-900">Simpan Invoice</p>
-
-              <p className="mt-1 text-xs leading-relaxed text-slate-500">
-                Download invoice dalam format PDF untuk disimpan sebagai bukti
-                pembayaran.
-              </p>
-
-              <Button
-                type="button"
-                onClick={handleDownload}
-                disabled={downloading}
-                className="mt-4 w-full rounded-xl bg-[#FF5412] text-xs font-bold text-white hover:bg-orange-600"
-              >
-                <Download className="mr-2 h-4 w-4" />
-
-                {downloading ? "Menyiapkan PDF..." : "Download PDF"}
-              </Button>
             </CardContent>
           </Card>
         </div>

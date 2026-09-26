@@ -43,8 +43,9 @@ export type OrdersSumAggregateOutputType = {
 export type OrdersMinAggregateOutputType = {
   id: number | null
   order_date: Date | null
-  service_status: string | null
-  payment_status: string | null
+  created_at: Date | null
+  service_status: $Enums.OrderServiceStatus | null
+  payment_status: $Enums.PaymentStatus | null
   customer_id: number | null
   vehicle_id: number | null
   staff_id: number | null
@@ -54,8 +55,9 @@ export type OrdersMinAggregateOutputType = {
 export type OrdersMaxAggregateOutputType = {
   id: number | null
   order_date: Date | null
-  service_status: string | null
-  payment_status: string | null
+  created_at: Date | null
+  service_status: $Enums.OrderServiceStatus | null
+  payment_status: $Enums.PaymentStatus | null
   customer_id: number | null
   vehicle_id: number | null
   staff_id: number | null
@@ -65,6 +67,7 @@ export type OrdersMaxAggregateOutputType = {
 export type OrdersCountAggregateOutputType = {
   id: number
   order_date: number
+  created_at: number
   service_status: number
   payment_status: number
   customer_id: number
@@ -92,6 +95,7 @@ export type OrdersSumAggregateInputType = {
 export type OrdersMinAggregateInputType = {
   id?: true
   order_date?: true
+  created_at?: true
   service_status?: true
   payment_status?: true
   customer_id?: true
@@ -103,6 +107,7 @@ export type OrdersMinAggregateInputType = {
 export type OrdersMaxAggregateInputType = {
   id?: true
   order_date?: true
+  created_at?: true
   service_status?: true
   payment_status?: true
   customer_id?: true
@@ -114,6 +119,7 @@ export type OrdersMaxAggregateInputType = {
 export type OrdersCountAggregateInputType = {
   id?: true
   order_date?: true
+  created_at?: true
   service_status?: true
   payment_status?: true
   customer_id?: true
@@ -212,8 +218,9 @@ export type ordersGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalA
 export type OrdersGroupByOutputType = {
   id: number
   order_date: Date | null
-  service_status: string | null
-  payment_status: string | null
+  created_at: Date
+  service_status: $Enums.OrderServiceStatus | null
+  payment_status: $Enums.PaymentStatus | null
   customer_id: number
   vehicle_id: number
   staff_id: number | null
@@ -246,35 +253,37 @@ export type ordersWhereInput = {
   NOT?: Prisma.ordersWhereInput | Prisma.ordersWhereInput[]
   id?: Prisma.IntFilter<"orders"> | number
   order_date?: Prisma.DateTimeNullableFilter<"orders"> | Date | string | null
-  service_status?: Prisma.StringNullableFilter<"orders"> | string | null
-  payment_status?: Prisma.StringNullableFilter<"orders"> | string | null
+  created_at?: Prisma.DateTimeFilter<"orders"> | Date | string
+  service_status?: Prisma.EnumOrderServiceStatusNullableFilter<"orders"> | $Enums.OrderServiceStatus | null
+  payment_status?: Prisma.EnumPaymentStatusNullableFilter<"orders"> | $Enums.PaymentStatus | null
   customer_id?: Prisma.IntFilter<"orders"> | number
   vehicle_id?: Prisma.IntFilter<"orders"> | number
   staff_id?: Prisma.IntNullableFilter<"orders"> | number | null
   check_in_time?: Prisma.StringNullableFilter<"orders"> | string | null
-  invoices?: Prisma.InvoicesListRelationFilter
-  order_items?: Prisma.Order_itemsListRelationFilter
-  payments?: Prisma.PaymentsListRelationFilter
   customers?: Prisma.XOR<Prisma.CustomersScalarRelationFilter, Prisma.customersWhereInput>
   vehicles?: Prisma.XOR<Prisma.VehiclesScalarRelationFilter, Prisma.vehiclesWhereInput>
   staffs?: Prisma.XOR<Prisma.StaffsNullableScalarRelationFilter, Prisma.staffsWhereInput> | null
+  order_items?: Prisma.Order_itemsListRelationFilter
+  payments?: Prisma.PaymentsListRelationFilter
+  invoices?: Prisma.InvoicesListRelationFilter
 }
 
 export type ordersOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   order_date?: Prisma.SortOrderInput | Prisma.SortOrder
+  created_at?: Prisma.SortOrder
   service_status?: Prisma.SortOrderInput | Prisma.SortOrder
   payment_status?: Prisma.SortOrderInput | Prisma.SortOrder
   customer_id?: Prisma.SortOrder
   vehicle_id?: Prisma.SortOrder
   staff_id?: Prisma.SortOrderInput | Prisma.SortOrder
   check_in_time?: Prisma.SortOrderInput | Prisma.SortOrder
-  invoices?: Prisma.invoicesOrderByRelationAggregateInput
-  order_items?: Prisma.order_itemsOrderByRelationAggregateInput
-  payments?: Prisma.paymentsOrderByRelationAggregateInput
   customers?: Prisma.customersOrderByWithRelationInput
   vehicles?: Prisma.vehiclesOrderByWithRelationInput
   staffs?: Prisma.staffsOrderByWithRelationInput
+  order_items?: Prisma.order_itemsOrderByRelationAggregateInput
+  payments?: Prisma.paymentsOrderByRelationAggregateInput
+  invoices?: Prisma.invoicesOrderByRelationAggregateInput
 }
 
 export type ordersWhereUniqueInput = Prisma.AtLeast<{
@@ -283,23 +292,25 @@ export type ordersWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.ordersWhereInput[]
   NOT?: Prisma.ordersWhereInput | Prisma.ordersWhereInput[]
   order_date?: Prisma.DateTimeNullableFilter<"orders"> | Date | string | null
-  service_status?: Prisma.StringNullableFilter<"orders"> | string | null
-  payment_status?: Prisma.StringNullableFilter<"orders"> | string | null
+  created_at?: Prisma.DateTimeFilter<"orders"> | Date | string
+  service_status?: Prisma.EnumOrderServiceStatusNullableFilter<"orders"> | $Enums.OrderServiceStatus | null
+  payment_status?: Prisma.EnumPaymentStatusNullableFilter<"orders"> | $Enums.PaymentStatus | null
   customer_id?: Prisma.IntFilter<"orders"> | number
   vehicle_id?: Prisma.IntFilter<"orders"> | number
   staff_id?: Prisma.IntNullableFilter<"orders"> | number | null
   check_in_time?: Prisma.StringNullableFilter<"orders"> | string | null
-  invoices?: Prisma.InvoicesListRelationFilter
-  order_items?: Prisma.Order_itemsListRelationFilter
-  payments?: Prisma.PaymentsListRelationFilter
   customers?: Prisma.XOR<Prisma.CustomersScalarRelationFilter, Prisma.customersWhereInput>
   vehicles?: Prisma.XOR<Prisma.VehiclesScalarRelationFilter, Prisma.vehiclesWhereInput>
   staffs?: Prisma.XOR<Prisma.StaffsNullableScalarRelationFilter, Prisma.staffsWhereInput> | null
+  order_items?: Prisma.Order_itemsListRelationFilter
+  payments?: Prisma.PaymentsListRelationFilter
+  invoices?: Prisma.InvoicesListRelationFilter
 }, "id">
 
 export type ordersOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   order_date?: Prisma.SortOrderInput | Prisma.SortOrder
+  created_at?: Prisma.SortOrder
   service_status?: Prisma.SortOrderInput | Prisma.SortOrder
   payment_status?: Prisma.SortOrderInput | Prisma.SortOrder
   customer_id?: Prisma.SortOrder
@@ -319,8 +330,9 @@ export type ordersScalarWhereWithAggregatesInput = {
   NOT?: Prisma.ordersScalarWhereWithAggregatesInput | Prisma.ordersScalarWhereWithAggregatesInput[]
   id?: Prisma.IntWithAggregatesFilter<"orders"> | number
   order_date?: Prisma.DateTimeNullableWithAggregatesFilter<"orders"> | Date | string | null
-  service_status?: Prisma.StringNullableWithAggregatesFilter<"orders"> | string | null
-  payment_status?: Prisma.StringNullableWithAggregatesFilter<"orders"> | string | null
+  created_at?: Prisma.DateTimeWithAggregatesFilter<"orders"> | Date | string
+  service_status?: Prisma.EnumOrderServiceStatusNullableWithAggregatesFilter<"orders"> | $Enums.OrderServiceStatus | null
+  payment_status?: Prisma.EnumPaymentStatusNullableWithAggregatesFilter<"orders"> | $Enums.PaymentStatus | null
   customer_id?: Prisma.IntWithAggregatesFilter<"orders"> | number
   vehicle_id?: Prisma.IntWithAggregatesFilter<"orders"> | number
   staff_id?: Prisma.IntNullableWithAggregatesFilter<"orders"> | number | null
@@ -329,63 +341,68 @@ export type ordersScalarWhereWithAggregatesInput = {
 
 export type ordersCreateInput = {
   order_date?: Date | string | null
-  service_status?: string | null
-  payment_status?: string | null
+  created_at?: Date | string
+  service_status?: $Enums.OrderServiceStatus | null
+  payment_status?: $Enums.PaymentStatus | null
   check_in_time?: string | null
-  invoices?: Prisma.invoicesCreateNestedManyWithoutOrdersInput
-  order_items?: Prisma.order_itemsCreateNestedManyWithoutOrdersInput
-  payments?: Prisma.paymentsCreateNestedManyWithoutOrdersInput
   customers: Prisma.customersCreateNestedOneWithoutOrdersInput
   vehicles: Prisma.vehiclesCreateNestedOneWithoutOrdersInput
   staffs?: Prisma.staffsCreateNestedOneWithoutOrdersInput
+  order_items?: Prisma.order_itemsCreateNestedManyWithoutOrdersInput
+  payments?: Prisma.paymentsCreateNestedManyWithoutOrdersInput
+  invoices?: Prisma.invoicesCreateNestedManyWithoutOrdersInput
 }
 
 export type ordersUncheckedCreateInput = {
   id?: number
   order_date?: Date | string | null
-  service_status?: string | null
-  payment_status?: string | null
+  created_at?: Date | string
+  service_status?: $Enums.OrderServiceStatus | null
+  payment_status?: $Enums.PaymentStatus | null
   customer_id: number
   vehicle_id: number
   staff_id?: number | null
   check_in_time?: string | null
-  invoices?: Prisma.invoicesUncheckedCreateNestedManyWithoutOrdersInput
   order_items?: Prisma.order_itemsUncheckedCreateNestedManyWithoutOrdersInput
   payments?: Prisma.paymentsUncheckedCreateNestedManyWithoutOrdersInput
+  invoices?: Prisma.invoicesUncheckedCreateNestedManyWithoutOrdersInput
 }
 
 export type ordersUpdateInput = {
   order_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  service_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  payment_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  service_status?: Prisma.NullableEnumOrderServiceStatusFieldUpdateOperationsInput | $Enums.OrderServiceStatus | null
+  payment_status?: Prisma.NullableEnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus | null
   check_in_time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  invoices?: Prisma.invoicesUpdateManyWithoutOrdersNestedInput
-  order_items?: Prisma.order_itemsUpdateManyWithoutOrdersNestedInput
-  payments?: Prisma.paymentsUpdateManyWithoutOrdersNestedInput
   customers?: Prisma.customersUpdateOneRequiredWithoutOrdersNestedInput
   vehicles?: Prisma.vehiclesUpdateOneRequiredWithoutOrdersNestedInput
   staffs?: Prisma.staffsUpdateOneWithoutOrdersNestedInput
+  order_items?: Prisma.order_itemsUpdateManyWithoutOrdersNestedInput
+  payments?: Prisma.paymentsUpdateManyWithoutOrdersNestedInput
+  invoices?: Prisma.invoicesUpdateManyWithoutOrdersNestedInput
 }
 
 export type ordersUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   order_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  service_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  payment_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  service_status?: Prisma.NullableEnumOrderServiceStatusFieldUpdateOperationsInput | $Enums.OrderServiceStatus | null
+  payment_status?: Prisma.NullableEnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus | null
   customer_id?: Prisma.IntFieldUpdateOperationsInput | number
   vehicle_id?: Prisma.IntFieldUpdateOperationsInput | number
   staff_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   check_in_time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  invoices?: Prisma.invoicesUncheckedUpdateManyWithoutOrdersNestedInput
   order_items?: Prisma.order_itemsUncheckedUpdateManyWithoutOrdersNestedInput
   payments?: Prisma.paymentsUncheckedUpdateManyWithoutOrdersNestedInput
+  invoices?: Prisma.invoicesUncheckedUpdateManyWithoutOrdersNestedInput
 }
 
 export type ordersCreateManyInput = {
   id?: number
   order_date?: Date | string | null
-  service_status?: string | null
-  payment_status?: string | null
+  created_at?: Date | string
+  service_status?: $Enums.OrderServiceStatus | null
+  payment_status?: $Enums.PaymentStatus | null
   customer_id: number
   vehicle_id: number
   staff_id?: number | null
@@ -394,16 +411,18 @@ export type ordersCreateManyInput = {
 
 export type ordersUpdateManyMutationInput = {
   order_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  service_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  payment_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  service_status?: Prisma.NullableEnumOrderServiceStatusFieldUpdateOperationsInput | $Enums.OrderServiceStatus | null
+  payment_status?: Prisma.NullableEnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus | null
   check_in_time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type ordersUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   order_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  service_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  payment_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  service_status?: Prisma.NullableEnumOrderServiceStatusFieldUpdateOperationsInput | $Enums.OrderServiceStatus | null
+  payment_status?: Prisma.NullableEnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus | null
   customer_id?: Prisma.IntFieldUpdateOperationsInput | number
   vehicle_id?: Prisma.IntFieldUpdateOperationsInput | number
   staff_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -420,14 +439,10 @@ export type ordersOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
-export type OrdersScalarRelationFilter = {
-  is?: Prisma.ordersWhereInput
-  isNot?: Prisma.ordersWhereInput
-}
-
 export type ordersCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   order_date?: Prisma.SortOrder
+  created_at?: Prisma.SortOrder
   service_status?: Prisma.SortOrder
   payment_status?: Prisma.SortOrder
   customer_id?: Prisma.SortOrder
@@ -446,6 +461,7 @@ export type ordersAvgOrderByAggregateInput = {
 export type ordersMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   order_date?: Prisma.SortOrder
+  created_at?: Prisma.SortOrder
   service_status?: Prisma.SortOrder
   payment_status?: Prisma.SortOrder
   customer_id?: Prisma.SortOrder
@@ -457,6 +473,7 @@ export type ordersMaxOrderByAggregateInput = {
 export type ordersMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   order_date?: Prisma.SortOrder
+  created_at?: Prisma.SortOrder
   service_status?: Prisma.SortOrder
   payment_status?: Prisma.SortOrder
   customer_id?: Prisma.SortOrder
@@ -470,6 +487,11 @@ export type ordersSumOrderByAggregateInput = {
   customer_id?: Prisma.SortOrder
   vehicle_id?: Prisma.SortOrder
   staff_id?: Prisma.SortOrder
+}
+
+export type OrdersScalarRelationFilter = {
+  is?: Prisma.ordersWhereInput
+  isNot?: Prisma.ordersWhereInput
 }
 
 export type ordersCreateNestedManyWithoutCustomersInput = {
@@ -511,90 +533,6 @@ export type ordersUncheckedUpdateManyWithoutCustomersNestedInput = {
   connect?: Prisma.ordersWhereUniqueInput | Prisma.ordersWhereUniqueInput[]
   update?: Prisma.ordersUpdateWithWhereUniqueWithoutCustomersInput | Prisma.ordersUpdateWithWhereUniqueWithoutCustomersInput[]
   updateMany?: Prisma.ordersUpdateManyWithWhereWithoutCustomersInput | Prisma.ordersUpdateManyWithWhereWithoutCustomersInput[]
-  deleteMany?: Prisma.ordersScalarWhereInput | Prisma.ordersScalarWhereInput[]
-}
-
-export type ordersCreateNestedOneWithoutInvoicesInput = {
-  create?: Prisma.XOR<Prisma.ordersCreateWithoutInvoicesInput, Prisma.ordersUncheckedCreateWithoutInvoicesInput>
-  connectOrCreate?: Prisma.ordersCreateOrConnectWithoutInvoicesInput
-  connect?: Prisma.ordersWhereUniqueInput
-}
-
-export type ordersUpdateOneRequiredWithoutInvoicesNestedInput = {
-  create?: Prisma.XOR<Prisma.ordersCreateWithoutInvoicesInput, Prisma.ordersUncheckedCreateWithoutInvoicesInput>
-  connectOrCreate?: Prisma.ordersCreateOrConnectWithoutInvoicesInput
-  upsert?: Prisma.ordersUpsertWithoutInvoicesInput
-  connect?: Prisma.ordersWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.ordersUpdateToOneWithWhereWithoutInvoicesInput, Prisma.ordersUpdateWithoutInvoicesInput>, Prisma.ordersUncheckedUpdateWithoutInvoicesInput>
-}
-
-export type ordersCreateNestedOneWithoutOrder_itemsInput = {
-  create?: Prisma.XOR<Prisma.ordersCreateWithoutOrder_itemsInput, Prisma.ordersUncheckedCreateWithoutOrder_itemsInput>
-  connectOrCreate?: Prisma.ordersCreateOrConnectWithoutOrder_itemsInput
-  connect?: Prisma.ordersWhereUniqueInput
-}
-
-export type ordersUpdateOneRequiredWithoutOrder_itemsNestedInput = {
-  create?: Prisma.XOR<Prisma.ordersCreateWithoutOrder_itemsInput, Prisma.ordersUncheckedCreateWithoutOrder_itemsInput>
-  connectOrCreate?: Prisma.ordersCreateOrConnectWithoutOrder_itemsInput
-  upsert?: Prisma.ordersUpsertWithoutOrder_itemsInput
-  connect?: Prisma.ordersWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.ordersUpdateToOneWithWhereWithoutOrder_itemsInput, Prisma.ordersUpdateWithoutOrder_itemsInput>, Prisma.ordersUncheckedUpdateWithoutOrder_itemsInput>
-}
-
-export type ordersCreateNestedOneWithoutPaymentsInput = {
-  create?: Prisma.XOR<Prisma.ordersCreateWithoutPaymentsInput, Prisma.ordersUncheckedCreateWithoutPaymentsInput>
-  connectOrCreate?: Prisma.ordersCreateOrConnectWithoutPaymentsInput
-  connect?: Prisma.ordersWhereUniqueInput
-}
-
-export type ordersUpdateOneRequiredWithoutPaymentsNestedInput = {
-  create?: Prisma.XOR<Prisma.ordersCreateWithoutPaymentsInput, Prisma.ordersUncheckedCreateWithoutPaymentsInput>
-  connectOrCreate?: Prisma.ordersCreateOrConnectWithoutPaymentsInput
-  upsert?: Prisma.ordersUpsertWithoutPaymentsInput
-  connect?: Prisma.ordersWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.ordersUpdateToOneWithWhereWithoutPaymentsInput, Prisma.ordersUpdateWithoutPaymentsInput>, Prisma.ordersUncheckedUpdateWithoutPaymentsInput>
-}
-
-export type ordersCreateNestedManyWithoutVehiclesInput = {
-  create?: Prisma.XOR<Prisma.ordersCreateWithoutVehiclesInput, Prisma.ordersUncheckedCreateWithoutVehiclesInput> | Prisma.ordersCreateWithoutVehiclesInput[] | Prisma.ordersUncheckedCreateWithoutVehiclesInput[]
-  connectOrCreate?: Prisma.ordersCreateOrConnectWithoutVehiclesInput | Prisma.ordersCreateOrConnectWithoutVehiclesInput[]
-  createMany?: Prisma.ordersCreateManyVehiclesInputEnvelope
-  connect?: Prisma.ordersWhereUniqueInput | Prisma.ordersWhereUniqueInput[]
-}
-
-export type ordersUncheckedCreateNestedManyWithoutVehiclesInput = {
-  create?: Prisma.XOR<Prisma.ordersCreateWithoutVehiclesInput, Prisma.ordersUncheckedCreateWithoutVehiclesInput> | Prisma.ordersCreateWithoutVehiclesInput[] | Prisma.ordersUncheckedCreateWithoutVehiclesInput[]
-  connectOrCreate?: Prisma.ordersCreateOrConnectWithoutVehiclesInput | Prisma.ordersCreateOrConnectWithoutVehiclesInput[]
-  createMany?: Prisma.ordersCreateManyVehiclesInputEnvelope
-  connect?: Prisma.ordersWhereUniqueInput | Prisma.ordersWhereUniqueInput[]
-}
-
-export type ordersUpdateManyWithoutVehiclesNestedInput = {
-  create?: Prisma.XOR<Prisma.ordersCreateWithoutVehiclesInput, Prisma.ordersUncheckedCreateWithoutVehiclesInput> | Prisma.ordersCreateWithoutVehiclesInput[] | Prisma.ordersUncheckedCreateWithoutVehiclesInput[]
-  connectOrCreate?: Prisma.ordersCreateOrConnectWithoutVehiclesInput | Prisma.ordersCreateOrConnectWithoutVehiclesInput[]
-  upsert?: Prisma.ordersUpsertWithWhereUniqueWithoutVehiclesInput | Prisma.ordersUpsertWithWhereUniqueWithoutVehiclesInput[]
-  createMany?: Prisma.ordersCreateManyVehiclesInputEnvelope
-  set?: Prisma.ordersWhereUniqueInput | Prisma.ordersWhereUniqueInput[]
-  disconnect?: Prisma.ordersWhereUniqueInput | Prisma.ordersWhereUniqueInput[]
-  delete?: Prisma.ordersWhereUniqueInput | Prisma.ordersWhereUniqueInput[]
-  connect?: Prisma.ordersWhereUniqueInput | Prisma.ordersWhereUniqueInput[]
-  update?: Prisma.ordersUpdateWithWhereUniqueWithoutVehiclesInput | Prisma.ordersUpdateWithWhereUniqueWithoutVehiclesInput[]
-  updateMany?: Prisma.ordersUpdateManyWithWhereWithoutVehiclesInput | Prisma.ordersUpdateManyWithWhereWithoutVehiclesInput[]
-  deleteMany?: Prisma.ordersScalarWhereInput | Prisma.ordersScalarWhereInput[]
-}
-
-export type ordersUncheckedUpdateManyWithoutVehiclesNestedInput = {
-  create?: Prisma.XOR<Prisma.ordersCreateWithoutVehiclesInput, Prisma.ordersUncheckedCreateWithoutVehiclesInput> | Prisma.ordersCreateWithoutVehiclesInput[] | Prisma.ordersUncheckedCreateWithoutVehiclesInput[]
-  connectOrCreate?: Prisma.ordersCreateOrConnectWithoutVehiclesInput | Prisma.ordersCreateOrConnectWithoutVehiclesInput[]
-  upsert?: Prisma.ordersUpsertWithWhereUniqueWithoutVehiclesInput | Prisma.ordersUpsertWithWhereUniqueWithoutVehiclesInput[]
-  createMany?: Prisma.ordersCreateManyVehiclesInputEnvelope
-  set?: Prisma.ordersWhereUniqueInput | Prisma.ordersWhereUniqueInput[]
-  disconnect?: Prisma.ordersWhereUniqueInput | Prisma.ordersWhereUniqueInput[]
-  delete?: Prisma.ordersWhereUniqueInput | Prisma.ordersWhereUniqueInput[]
-  connect?: Prisma.ordersWhereUniqueInput | Prisma.ordersWhereUniqueInput[]
-  update?: Prisma.ordersUpdateWithWhereUniqueWithoutVehiclesInput | Prisma.ordersUpdateWithWhereUniqueWithoutVehiclesInput[]
-  updateMany?: Prisma.ordersUpdateManyWithWhereWithoutVehiclesInput | Prisma.ordersUpdateManyWithWhereWithoutVehiclesInput[]
   deleteMany?: Prisma.ordersScalarWhereInput | Prisma.ordersScalarWhereInput[]
 }
 
@@ -640,29 +578,123 @@ export type ordersUncheckedUpdateManyWithoutStaffsNestedInput = {
   deleteMany?: Prisma.ordersScalarWhereInput | Prisma.ordersScalarWhereInput[]
 }
 
+export type ordersCreateNestedManyWithoutVehiclesInput = {
+  create?: Prisma.XOR<Prisma.ordersCreateWithoutVehiclesInput, Prisma.ordersUncheckedCreateWithoutVehiclesInput> | Prisma.ordersCreateWithoutVehiclesInput[] | Prisma.ordersUncheckedCreateWithoutVehiclesInput[]
+  connectOrCreate?: Prisma.ordersCreateOrConnectWithoutVehiclesInput | Prisma.ordersCreateOrConnectWithoutVehiclesInput[]
+  createMany?: Prisma.ordersCreateManyVehiclesInputEnvelope
+  connect?: Prisma.ordersWhereUniqueInput | Prisma.ordersWhereUniqueInput[]
+}
+
+export type ordersUncheckedCreateNestedManyWithoutVehiclesInput = {
+  create?: Prisma.XOR<Prisma.ordersCreateWithoutVehiclesInput, Prisma.ordersUncheckedCreateWithoutVehiclesInput> | Prisma.ordersCreateWithoutVehiclesInput[] | Prisma.ordersUncheckedCreateWithoutVehiclesInput[]
+  connectOrCreate?: Prisma.ordersCreateOrConnectWithoutVehiclesInput | Prisma.ordersCreateOrConnectWithoutVehiclesInput[]
+  createMany?: Prisma.ordersCreateManyVehiclesInputEnvelope
+  connect?: Prisma.ordersWhereUniqueInput | Prisma.ordersWhereUniqueInput[]
+}
+
+export type ordersUpdateManyWithoutVehiclesNestedInput = {
+  create?: Prisma.XOR<Prisma.ordersCreateWithoutVehiclesInput, Prisma.ordersUncheckedCreateWithoutVehiclesInput> | Prisma.ordersCreateWithoutVehiclesInput[] | Prisma.ordersUncheckedCreateWithoutVehiclesInput[]
+  connectOrCreate?: Prisma.ordersCreateOrConnectWithoutVehiclesInput | Prisma.ordersCreateOrConnectWithoutVehiclesInput[]
+  upsert?: Prisma.ordersUpsertWithWhereUniqueWithoutVehiclesInput | Prisma.ordersUpsertWithWhereUniqueWithoutVehiclesInput[]
+  createMany?: Prisma.ordersCreateManyVehiclesInputEnvelope
+  set?: Prisma.ordersWhereUniqueInput | Prisma.ordersWhereUniqueInput[]
+  disconnect?: Prisma.ordersWhereUniqueInput | Prisma.ordersWhereUniqueInput[]
+  delete?: Prisma.ordersWhereUniqueInput | Prisma.ordersWhereUniqueInput[]
+  connect?: Prisma.ordersWhereUniqueInput | Prisma.ordersWhereUniqueInput[]
+  update?: Prisma.ordersUpdateWithWhereUniqueWithoutVehiclesInput | Prisma.ordersUpdateWithWhereUniqueWithoutVehiclesInput[]
+  updateMany?: Prisma.ordersUpdateManyWithWhereWithoutVehiclesInput | Prisma.ordersUpdateManyWithWhereWithoutVehiclesInput[]
+  deleteMany?: Prisma.ordersScalarWhereInput | Prisma.ordersScalarWhereInput[]
+}
+
+export type ordersUncheckedUpdateManyWithoutVehiclesNestedInput = {
+  create?: Prisma.XOR<Prisma.ordersCreateWithoutVehiclesInput, Prisma.ordersUncheckedCreateWithoutVehiclesInput> | Prisma.ordersCreateWithoutVehiclesInput[] | Prisma.ordersUncheckedCreateWithoutVehiclesInput[]
+  connectOrCreate?: Prisma.ordersCreateOrConnectWithoutVehiclesInput | Prisma.ordersCreateOrConnectWithoutVehiclesInput[]
+  upsert?: Prisma.ordersUpsertWithWhereUniqueWithoutVehiclesInput | Prisma.ordersUpsertWithWhereUniqueWithoutVehiclesInput[]
+  createMany?: Prisma.ordersCreateManyVehiclesInputEnvelope
+  set?: Prisma.ordersWhereUniqueInput | Prisma.ordersWhereUniqueInput[]
+  disconnect?: Prisma.ordersWhereUniqueInput | Prisma.ordersWhereUniqueInput[]
+  delete?: Prisma.ordersWhereUniqueInput | Prisma.ordersWhereUniqueInput[]
+  connect?: Prisma.ordersWhereUniqueInput | Prisma.ordersWhereUniqueInput[]
+  update?: Prisma.ordersUpdateWithWhereUniqueWithoutVehiclesInput | Prisma.ordersUpdateWithWhereUniqueWithoutVehiclesInput[]
+  updateMany?: Prisma.ordersUpdateManyWithWhereWithoutVehiclesInput | Prisma.ordersUpdateManyWithWhereWithoutVehiclesInput[]
+  deleteMany?: Prisma.ordersScalarWhereInput | Prisma.ordersScalarWhereInput[]
+}
+
+export type NullableEnumOrderServiceStatusFieldUpdateOperationsInput = {
+  set?: $Enums.OrderServiceStatus | null
+}
+
+export type NullableEnumPaymentStatusFieldUpdateOperationsInput = {
+  set?: $Enums.PaymentStatus | null
+}
+
+export type ordersCreateNestedOneWithoutOrder_itemsInput = {
+  create?: Prisma.XOR<Prisma.ordersCreateWithoutOrder_itemsInput, Prisma.ordersUncheckedCreateWithoutOrder_itemsInput>
+  connectOrCreate?: Prisma.ordersCreateOrConnectWithoutOrder_itemsInput
+  connect?: Prisma.ordersWhereUniqueInput
+}
+
+export type ordersUpdateOneRequiredWithoutOrder_itemsNestedInput = {
+  create?: Prisma.XOR<Prisma.ordersCreateWithoutOrder_itemsInput, Prisma.ordersUncheckedCreateWithoutOrder_itemsInput>
+  connectOrCreate?: Prisma.ordersCreateOrConnectWithoutOrder_itemsInput
+  upsert?: Prisma.ordersUpsertWithoutOrder_itemsInput
+  connect?: Prisma.ordersWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ordersUpdateToOneWithWhereWithoutOrder_itemsInput, Prisma.ordersUpdateWithoutOrder_itemsInput>, Prisma.ordersUncheckedUpdateWithoutOrder_itemsInput>
+}
+
+export type ordersCreateNestedOneWithoutPaymentsInput = {
+  create?: Prisma.XOR<Prisma.ordersCreateWithoutPaymentsInput, Prisma.ordersUncheckedCreateWithoutPaymentsInput>
+  connectOrCreate?: Prisma.ordersCreateOrConnectWithoutPaymentsInput
+  connect?: Prisma.ordersWhereUniqueInput
+}
+
+export type ordersUpdateOneRequiredWithoutPaymentsNestedInput = {
+  create?: Prisma.XOR<Prisma.ordersCreateWithoutPaymentsInput, Prisma.ordersUncheckedCreateWithoutPaymentsInput>
+  connectOrCreate?: Prisma.ordersCreateOrConnectWithoutPaymentsInput
+  upsert?: Prisma.ordersUpsertWithoutPaymentsInput
+  connect?: Prisma.ordersWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ordersUpdateToOneWithWhereWithoutPaymentsInput, Prisma.ordersUpdateWithoutPaymentsInput>, Prisma.ordersUncheckedUpdateWithoutPaymentsInput>
+}
+
+export type ordersCreateNestedOneWithoutInvoicesInput = {
+  create?: Prisma.XOR<Prisma.ordersCreateWithoutInvoicesInput, Prisma.ordersUncheckedCreateWithoutInvoicesInput>
+  connectOrCreate?: Prisma.ordersCreateOrConnectWithoutInvoicesInput
+  connect?: Prisma.ordersWhereUniqueInput
+}
+
+export type ordersUpdateOneRequiredWithoutInvoicesNestedInput = {
+  create?: Prisma.XOR<Prisma.ordersCreateWithoutInvoicesInput, Prisma.ordersUncheckedCreateWithoutInvoicesInput>
+  connectOrCreate?: Prisma.ordersCreateOrConnectWithoutInvoicesInput
+  upsert?: Prisma.ordersUpsertWithoutInvoicesInput
+  connect?: Prisma.ordersWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ordersUpdateToOneWithWhereWithoutInvoicesInput, Prisma.ordersUpdateWithoutInvoicesInput>, Prisma.ordersUncheckedUpdateWithoutInvoicesInput>
+}
+
 export type ordersCreateWithoutCustomersInput = {
   order_date?: Date | string | null
-  service_status?: string | null
-  payment_status?: string | null
+  created_at?: Date | string
+  service_status?: $Enums.OrderServiceStatus | null
+  payment_status?: $Enums.PaymentStatus | null
   check_in_time?: string | null
-  invoices?: Prisma.invoicesCreateNestedManyWithoutOrdersInput
-  order_items?: Prisma.order_itemsCreateNestedManyWithoutOrdersInput
-  payments?: Prisma.paymentsCreateNestedManyWithoutOrdersInput
   vehicles: Prisma.vehiclesCreateNestedOneWithoutOrdersInput
   staffs?: Prisma.staffsCreateNestedOneWithoutOrdersInput
+  order_items?: Prisma.order_itemsCreateNestedManyWithoutOrdersInput
+  payments?: Prisma.paymentsCreateNestedManyWithoutOrdersInput
+  invoices?: Prisma.invoicesCreateNestedManyWithoutOrdersInput
 }
 
 export type ordersUncheckedCreateWithoutCustomersInput = {
   id?: number
   order_date?: Date | string | null
-  service_status?: string | null
-  payment_status?: string | null
+  created_at?: Date | string
+  service_status?: $Enums.OrderServiceStatus | null
+  payment_status?: $Enums.PaymentStatus | null
   vehicle_id: number
   staff_id?: number | null
   check_in_time?: string | null
-  invoices?: Prisma.invoicesUncheckedCreateNestedManyWithoutOrdersInput
   order_items?: Prisma.order_itemsUncheckedCreateNestedManyWithoutOrdersInput
   payments?: Prisma.paymentsUncheckedCreateNestedManyWithoutOrdersInput
+  invoices?: Prisma.invoicesUncheckedCreateNestedManyWithoutOrdersInput
 }
 
 export type ordersCreateOrConnectWithoutCustomersInput = {
@@ -697,286 +729,40 @@ export type ordersScalarWhereInput = {
   NOT?: Prisma.ordersScalarWhereInput | Prisma.ordersScalarWhereInput[]
   id?: Prisma.IntFilter<"orders"> | number
   order_date?: Prisma.DateTimeNullableFilter<"orders"> | Date | string | null
-  service_status?: Prisma.StringNullableFilter<"orders"> | string | null
-  payment_status?: Prisma.StringNullableFilter<"orders"> | string | null
+  created_at?: Prisma.DateTimeFilter<"orders"> | Date | string
+  service_status?: Prisma.EnumOrderServiceStatusNullableFilter<"orders"> | $Enums.OrderServiceStatus | null
+  payment_status?: Prisma.EnumPaymentStatusNullableFilter<"orders"> | $Enums.PaymentStatus | null
   customer_id?: Prisma.IntFilter<"orders"> | number
   vehicle_id?: Prisma.IntFilter<"orders"> | number
   staff_id?: Prisma.IntNullableFilter<"orders"> | number | null
   check_in_time?: Prisma.StringNullableFilter<"orders"> | string | null
 }
 
-export type ordersCreateWithoutInvoicesInput = {
-  order_date?: Date | string | null
-  service_status?: string | null
-  payment_status?: string | null
-  check_in_time?: string | null
-  order_items?: Prisma.order_itemsCreateNestedManyWithoutOrdersInput
-  payments?: Prisma.paymentsCreateNestedManyWithoutOrdersInput
-  customers: Prisma.customersCreateNestedOneWithoutOrdersInput
-  vehicles: Prisma.vehiclesCreateNestedOneWithoutOrdersInput
-  staffs?: Prisma.staffsCreateNestedOneWithoutOrdersInput
-}
-
-export type ordersUncheckedCreateWithoutInvoicesInput = {
-  id?: number
-  order_date?: Date | string | null
-  service_status?: string | null
-  payment_status?: string | null
-  customer_id: number
-  vehicle_id: number
-  staff_id?: number | null
-  check_in_time?: string | null
-  order_items?: Prisma.order_itemsUncheckedCreateNestedManyWithoutOrdersInput
-  payments?: Prisma.paymentsUncheckedCreateNestedManyWithoutOrdersInput
-}
-
-export type ordersCreateOrConnectWithoutInvoicesInput = {
-  where: Prisma.ordersWhereUniqueInput
-  create: Prisma.XOR<Prisma.ordersCreateWithoutInvoicesInput, Prisma.ordersUncheckedCreateWithoutInvoicesInput>
-}
-
-export type ordersUpsertWithoutInvoicesInput = {
-  update: Prisma.XOR<Prisma.ordersUpdateWithoutInvoicesInput, Prisma.ordersUncheckedUpdateWithoutInvoicesInput>
-  create: Prisma.XOR<Prisma.ordersCreateWithoutInvoicesInput, Prisma.ordersUncheckedCreateWithoutInvoicesInput>
-  where?: Prisma.ordersWhereInput
-}
-
-export type ordersUpdateToOneWithWhereWithoutInvoicesInput = {
-  where?: Prisma.ordersWhereInput
-  data: Prisma.XOR<Prisma.ordersUpdateWithoutInvoicesInput, Prisma.ordersUncheckedUpdateWithoutInvoicesInput>
-}
-
-export type ordersUpdateWithoutInvoicesInput = {
-  order_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  service_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  payment_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  check_in_time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  order_items?: Prisma.order_itemsUpdateManyWithoutOrdersNestedInput
-  payments?: Prisma.paymentsUpdateManyWithoutOrdersNestedInput
-  customers?: Prisma.customersUpdateOneRequiredWithoutOrdersNestedInput
-  vehicles?: Prisma.vehiclesUpdateOneRequiredWithoutOrdersNestedInput
-  staffs?: Prisma.staffsUpdateOneWithoutOrdersNestedInput
-}
-
-export type ordersUncheckedUpdateWithoutInvoicesInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  order_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  service_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  payment_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  customer_id?: Prisma.IntFieldUpdateOperationsInput | number
-  vehicle_id?: Prisma.IntFieldUpdateOperationsInput | number
-  staff_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  check_in_time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  order_items?: Prisma.order_itemsUncheckedUpdateManyWithoutOrdersNestedInput
-  payments?: Prisma.paymentsUncheckedUpdateManyWithoutOrdersNestedInput
-}
-
-export type ordersCreateWithoutOrder_itemsInput = {
-  order_date?: Date | string | null
-  service_status?: string | null
-  payment_status?: string | null
-  check_in_time?: string | null
-  invoices?: Prisma.invoicesCreateNestedManyWithoutOrdersInput
-  payments?: Prisma.paymentsCreateNestedManyWithoutOrdersInput
-  customers: Prisma.customersCreateNestedOneWithoutOrdersInput
-  vehicles: Prisma.vehiclesCreateNestedOneWithoutOrdersInput
-  staffs?: Prisma.staffsCreateNestedOneWithoutOrdersInput
-}
-
-export type ordersUncheckedCreateWithoutOrder_itemsInput = {
-  id?: number
-  order_date?: Date | string | null
-  service_status?: string | null
-  payment_status?: string | null
-  customer_id: number
-  vehicle_id: number
-  staff_id?: number | null
-  check_in_time?: string | null
-  invoices?: Prisma.invoicesUncheckedCreateNestedManyWithoutOrdersInput
-  payments?: Prisma.paymentsUncheckedCreateNestedManyWithoutOrdersInput
-}
-
-export type ordersCreateOrConnectWithoutOrder_itemsInput = {
-  where: Prisma.ordersWhereUniqueInput
-  create: Prisma.XOR<Prisma.ordersCreateWithoutOrder_itemsInput, Prisma.ordersUncheckedCreateWithoutOrder_itemsInput>
-}
-
-export type ordersUpsertWithoutOrder_itemsInput = {
-  update: Prisma.XOR<Prisma.ordersUpdateWithoutOrder_itemsInput, Prisma.ordersUncheckedUpdateWithoutOrder_itemsInput>
-  create: Prisma.XOR<Prisma.ordersCreateWithoutOrder_itemsInput, Prisma.ordersUncheckedCreateWithoutOrder_itemsInput>
-  where?: Prisma.ordersWhereInput
-}
-
-export type ordersUpdateToOneWithWhereWithoutOrder_itemsInput = {
-  where?: Prisma.ordersWhereInput
-  data: Prisma.XOR<Prisma.ordersUpdateWithoutOrder_itemsInput, Prisma.ordersUncheckedUpdateWithoutOrder_itemsInput>
-}
-
-export type ordersUpdateWithoutOrder_itemsInput = {
-  order_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  service_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  payment_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  check_in_time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  invoices?: Prisma.invoicesUpdateManyWithoutOrdersNestedInput
-  payments?: Prisma.paymentsUpdateManyWithoutOrdersNestedInput
-  customers?: Prisma.customersUpdateOneRequiredWithoutOrdersNestedInput
-  vehicles?: Prisma.vehiclesUpdateOneRequiredWithoutOrdersNestedInput
-  staffs?: Prisma.staffsUpdateOneWithoutOrdersNestedInput
-}
-
-export type ordersUncheckedUpdateWithoutOrder_itemsInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  order_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  service_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  payment_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  customer_id?: Prisma.IntFieldUpdateOperationsInput | number
-  vehicle_id?: Prisma.IntFieldUpdateOperationsInput | number
-  staff_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  check_in_time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  invoices?: Prisma.invoicesUncheckedUpdateManyWithoutOrdersNestedInput
-  payments?: Prisma.paymentsUncheckedUpdateManyWithoutOrdersNestedInput
-}
-
-export type ordersCreateWithoutPaymentsInput = {
-  order_date?: Date | string | null
-  service_status?: string | null
-  payment_status?: string | null
-  check_in_time?: string | null
-  invoices?: Prisma.invoicesCreateNestedManyWithoutOrdersInput
-  order_items?: Prisma.order_itemsCreateNestedManyWithoutOrdersInput
-  customers: Prisma.customersCreateNestedOneWithoutOrdersInput
-  vehicles: Prisma.vehiclesCreateNestedOneWithoutOrdersInput
-  staffs?: Prisma.staffsCreateNestedOneWithoutOrdersInput
-}
-
-export type ordersUncheckedCreateWithoutPaymentsInput = {
-  id?: number
-  order_date?: Date | string | null
-  service_status?: string | null
-  payment_status?: string | null
-  customer_id: number
-  vehicle_id: number
-  staff_id?: number | null
-  check_in_time?: string | null
-  invoices?: Prisma.invoicesUncheckedCreateNestedManyWithoutOrdersInput
-  order_items?: Prisma.order_itemsUncheckedCreateNestedManyWithoutOrdersInput
-}
-
-export type ordersCreateOrConnectWithoutPaymentsInput = {
-  where: Prisma.ordersWhereUniqueInput
-  create: Prisma.XOR<Prisma.ordersCreateWithoutPaymentsInput, Prisma.ordersUncheckedCreateWithoutPaymentsInput>
-}
-
-export type ordersUpsertWithoutPaymentsInput = {
-  update: Prisma.XOR<Prisma.ordersUpdateWithoutPaymentsInput, Prisma.ordersUncheckedUpdateWithoutPaymentsInput>
-  create: Prisma.XOR<Prisma.ordersCreateWithoutPaymentsInput, Prisma.ordersUncheckedCreateWithoutPaymentsInput>
-  where?: Prisma.ordersWhereInput
-}
-
-export type ordersUpdateToOneWithWhereWithoutPaymentsInput = {
-  where?: Prisma.ordersWhereInput
-  data: Prisma.XOR<Prisma.ordersUpdateWithoutPaymentsInput, Prisma.ordersUncheckedUpdateWithoutPaymentsInput>
-}
-
-export type ordersUpdateWithoutPaymentsInput = {
-  order_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  service_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  payment_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  check_in_time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  invoices?: Prisma.invoicesUpdateManyWithoutOrdersNestedInput
-  order_items?: Prisma.order_itemsUpdateManyWithoutOrdersNestedInput
-  customers?: Prisma.customersUpdateOneRequiredWithoutOrdersNestedInput
-  vehicles?: Prisma.vehiclesUpdateOneRequiredWithoutOrdersNestedInput
-  staffs?: Prisma.staffsUpdateOneWithoutOrdersNestedInput
-}
-
-export type ordersUncheckedUpdateWithoutPaymentsInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  order_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  service_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  payment_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  customer_id?: Prisma.IntFieldUpdateOperationsInput | number
-  vehicle_id?: Prisma.IntFieldUpdateOperationsInput | number
-  staff_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  check_in_time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  invoices?: Prisma.invoicesUncheckedUpdateManyWithoutOrdersNestedInput
-  order_items?: Prisma.order_itemsUncheckedUpdateManyWithoutOrdersNestedInput
-}
-
-export type ordersCreateWithoutVehiclesInput = {
-  order_date?: Date | string | null
-  service_status?: string | null
-  payment_status?: string | null
-  check_in_time?: string | null
-  invoices?: Prisma.invoicesCreateNestedManyWithoutOrdersInput
-  order_items?: Prisma.order_itemsCreateNestedManyWithoutOrdersInput
-  payments?: Prisma.paymentsCreateNestedManyWithoutOrdersInput
-  customers: Prisma.customersCreateNestedOneWithoutOrdersInput
-  staffs?: Prisma.staffsCreateNestedOneWithoutOrdersInput
-}
-
-export type ordersUncheckedCreateWithoutVehiclesInput = {
-  id?: number
-  order_date?: Date | string | null
-  service_status?: string | null
-  payment_status?: string | null
-  customer_id: number
-  staff_id?: number | null
-  check_in_time?: string | null
-  invoices?: Prisma.invoicesUncheckedCreateNestedManyWithoutOrdersInput
-  order_items?: Prisma.order_itemsUncheckedCreateNestedManyWithoutOrdersInput
-  payments?: Prisma.paymentsUncheckedCreateNestedManyWithoutOrdersInput
-}
-
-export type ordersCreateOrConnectWithoutVehiclesInput = {
-  where: Prisma.ordersWhereUniqueInput
-  create: Prisma.XOR<Prisma.ordersCreateWithoutVehiclesInput, Prisma.ordersUncheckedCreateWithoutVehiclesInput>
-}
-
-export type ordersCreateManyVehiclesInputEnvelope = {
-  data: Prisma.ordersCreateManyVehiclesInput | Prisma.ordersCreateManyVehiclesInput[]
-  skipDuplicates?: boolean
-}
-
-export type ordersUpsertWithWhereUniqueWithoutVehiclesInput = {
-  where: Prisma.ordersWhereUniqueInput
-  update: Prisma.XOR<Prisma.ordersUpdateWithoutVehiclesInput, Prisma.ordersUncheckedUpdateWithoutVehiclesInput>
-  create: Prisma.XOR<Prisma.ordersCreateWithoutVehiclesInput, Prisma.ordersUncheckedCreateWithoutVehiclesInput>
-}
-
-export type ordersUpdateWithWhereUniqueWithoutVehiclesInput = {
-  where: Prisma.ordersWhereUniqueInput
-  data: Prisma.XOR<Prisma.ordersUpdateWithoutVehiclesInput, Prisma.ordersUncheckedUpdateWithoutVehiclesInput>
-}
-
-export type ordersUpdateManyWithWhereWithoutVehiclesInput = {
-  where: Prisma.ordersScalarWhereInput
-  data: Prisma.XOR<Prisma.ordersUpdateManyMutationInput, Prisma.ordersUncheckedUpdateManyWithoutVehiclesInput>
-}
-
 export type ordersCreateWithoutStaffsInput = {
   order_date?: Date | string | null
-  service_status?: string | null
-  payment_status?: string | null
+  created_at?: Date | string
+  service_status?: $Enums.OrderServiceStatus | null
+  payment_status?: $Enums.PaymentStatus | null
   check_in_time?: string | null
-  invoices?: Prisma.invoicesCreateNestedManyWithoutOrdersInput
-  order_items?: Prisma.order_itemsCreateNestedManyWithoutOrdersInput
-  payments?: Prisma.paymentsCreateNestedManyWithoutOrdersInput
   customers: Prisma.customersCreateNestedOneWithoutOrdersInput
   vehicles: Prisma.vehiclesCreateNestedOneWithoutOrdersInput
+  order_items?: Prisma.order_itemsCreateNestedManyWithoutOrdersInput
+  payments?: Prisma.paymentsCreateNestedManyWithoutOrdersInput
+  invoices?: Prisma.invoicesCreateNestedManyWithoutOrdersInput
 }
 
 export type ordersUncheckedCreateWithoutStaffsInput = {
   id?: number
   order_date?: Date | string | null
-  service_status?: string | null
-  payment_status?: string | null
+  created_at?: Date | string
+  service_status?: $Enums.OrderServiceStatus | null
+  payment_status?: $Enums.PaymentStatus | null
   customer_id: number
   vehicle_id: number
   check_in_time?: string | null
-  invoices?: Prisma.invoicesUncheckedCreateNestedManyWithoutOrdersInput
   order_items?: Prisma.order_itemsUncheckedCreateNestedManyWithoutOrdersInput
   payments?: Prisma.paymentsUncheckedCreateNestedManyWithoutOrdersInput
+  invoices?: Prisma.invoicesUncheckedCreateNestedManyWithoutOrdersInput
 }
 
 export type ordersCreateOrConnectWithoutStaffsInput = {
@@ -1005,11 +791,275 @@ export type ordersUpdateManyWithWhereWithoutStaffsInput = {
   data: Prisma.XOR<Prisma.ordersUpdateManyMutationInput, Prisma.ordersUncheckedUpdateManyWithoutStaffsInput>
 }
 
+export type ordersCreateWithoutVehiclesInput = {
+  order_date?: Date | string | null
+  created_at?: Date | string
+  service_status?: $Enums.OrderServiceStatus | null
+  payment_status?: $Enums.PaymentStatus | null
+  check_in_time?: string | null
+  customers: Prisma.customersCreateNestedOneWithoutOrdersInput
+  staffs?: Prisma.staffsCreateNestedOneWithoutOrdersInput
+  order_items?: Prisma.order_itemsCreateNestedManyWithoutOrdersInput
+  payments?: Prisma.paymentsCreateNestedManyWithoutOrdersInput
+  invoices?: Prisma.invoicesCreateNestedManyWithoutOrdersInput
+}
+
+export type ordersUncheckedCreateWithoutVehiclesInput = {
+  id?: number
+  order_date?: Date | string | null
+  created_at?: Date | string
+  service_status?: $Enums.OrderServiceStatus | null
+  payment_status?: $Enums.PaymentStatus | null
+  customer_id: number
+  staff_id?: number | null
+  check_in_time?: string | null
+  order_items?: Prisma.order_itemsUncheckedCreateNestedManyWithoutOrdersInput
+  payments?: Prisma.paymentsUncheckedCreateNestedManyWithoutOrdersInput
+  invoices?: Prisma.invoicesUncheckedCreateNestedManyWithoutOrdersInput
+}
+
+export type ordersCreateOrConnectWithoutVehiclesInput = {
+  where: Prisma.ordersWhereUniqueInput
+  create: Prisma.XOR<Prisma.ordersCreateWithoutVehiclesInput, Prisma.ordersUncheckedCreateWithoutVehiclesInput>
+}
+
+export type ordersCreateManyVehiclesInputEnvelope = {
+  data: Prisma.ordersCreateManyVehiclesInput | Prisma.ordersCreateManyVehiclesInput[]
+  skipDuplicates?: boolean
+}
+
+export type ordersUpsertWithWhereUniqueWithoutVehiclesInput = {
+  where: Prisma.ordersWhereUniqueInput
+  update: Prisma.XOR<Prisma.ordersUpdateWithoutVehiclesInput, Prisma.ordersUncheckedUpdateWithoutVehiclesInput>
+  create: Prisma.XOR<Prisma.ordersCreateWithoutVehiclesInput, Prisma.ordersUncheckedCreateWithoutVehiclesInput>
+}
+
+export type ordersUpdateWithWhereUniqueWithoutVehiclesInput = {
+  where: Prisma.ordersWhereUniqueInput
+  data: Prisma.XOR<Prisma.ordersUpdateWithoutVehiclesInput, Prisma.ordersUncheckedUpdateWithoutVehiclesInput>
+}
+
+export type ordersUpdateManyWithWhereWithoutVehiclesInput = {
+  where: Prisma.ordersScalarWhereInput
+  data: Prisma.XOR<Prisma.ordersUpdateManyMutationInput, Prisma.ordersUncheckedUpdateManyWithoutVehiclesInput>
+}
+
+export type ordersCreateWithoutOrder_itemsInput = {
+  order_date?: Date | string | null
+  created_at?: Date | string
+  service_status?: $Enums.OrderServiceStatus | null
+  payment_status?: $Enums.PaymentStatus | null
+  check_in_time?: string | null
+  customers: Prisma.customersCreateNestedOneWithoutOrdersInput
+  vehicles: Prisma.vehiclesCreateNestedOneWithoutOrdersInput
+  staffs?: Prisma.staffsCreateNestedOneWithoutOrdersInput
+  payments?: Prisma.paymentsCreateNestedManyWithoutOrdersInput
+  invoices?: Prisma.invoicesCreateNestedManyWithoutOrdersInput
+}
+
+export type ordersUncheckedCreateWithoutOrder_itemsInput = {
+  id?: number
+  order_date?: Date | string | null
+  created_at?: Date | string
+  service_status?: $Enums.OrderServiceStatus | null
+  payment_status?: $Enums.PaymentStatus | null
+  customer_id: number
+  vehicle_id: number
+  staff_id?: number | null
+  check_in_time?: string | null
+  payments?: Prisma.paymentsUncheckedCreateNestedManyWithoutOrdersInput
+  invoices?: Prisma.invoicesUncheckedCreateNestedManyWithoutOrdersInput
+}
+
+export type ordersCreateOrConnectWithoutOrder_itemsInput = {
+  where: Prisma.ordersWhereUniqueInput
+  create: Prisma.XOR<Prisma.ordersCreateWithoutOrder_itemsInput, Prisma.ordersUncheckedCreateWithoutOrder_itemsInput>
+}
+
+export type ordersUpsertWithoutOrder_itemsInput = {
+  update: Prisma.XOR<Prisma.ordersUpdateWithoutOrder_itemsInput, Prisma.ordersUncheckedUpdateWithoutOrder_itemsInput>
+  create: Prisma.XOR<Prisma.ordersCreateWithoutOrder_itemsInput, Prisma.ordersUncheckedCreateWithoutOrder_itemsInput>
+  where?: Prisma.ordersWhereInput
+}
+
+export type ordersUpdateToOneWithWhereWithoutOrder_itemsInput = {
+  where?: Prisma.ordersWhereInput
+  data: Prisma.XOR<Prisma.ordersUpdateWithoutOrder_itemsInput, Prisma.ordersUncheckedUpdateWithoutOrder_itemsInput>
+}
+
+export type ordersUpdateWithoutOrder_itemsInput = {
+  order_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  service_status?: Prisma.NullableEnumOrderServiceStatusFieldUpdateOperationsInput | $Enums.OrderServiceStatus | null
+  payment_status?: Prisma.NullableEnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus | null
+  check_in_time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  customers?: Prisma.customersUpdateOneRequiredWithoutOrdersNestedInput
+  vehicles?: Prisma.vehiclesUpdateOneRequiredWithoutOrdersNestedInput
+  staffs?: Prisma.staffsUpdateOneWithoutOrdersNestedInput
+  payments?: Prisma.paymentsUpdateManyWithoutOrdersNestedInput
+  invoices?: Prisma.invoicesUpdateManyWithoutOrdersNestedInput
+}
+
+export type ordersUncheckedUpdateWithoutOrder_itemsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  order_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  service_status?: Prisma.NullableEnumOrderServiceStatusFieldUpdateOperationsInput | $Enums.OrderServiceStatus | null
+  payment_status?: Prisma.NullableEnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus | null
+  customer_id?: Prisma.IntFieldUpdateOperationsInput | number
+  vehicle_id?: Prisma.IntFieldUpdateOperationsInput | number
+  staff_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  check_in_time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payments?: Prisma.paymentsUncheckedUpdateManyWithoutOrdersNestedInput
+  invoices?: Prisma.invoicesUncheckedUpdateManyWithoutOrdersNestedInput
+}
+
+export type ordersCreateWithoutPaymentsInput = {
+  order_date?: Date | string | null
+  created_at?: Date | string
+  service_status?: $Enums.OrderServiceStatus | null
+  payment_status?: $Enums.PaymentStatus | null
+  check_in_time?: string | null
+  customers: Prisma.customersCreateNestedOneWithoutOrdersInput
+  vehicles: Prisma.vehiclesCreateNestedOneWithoutOrdersInput
+  staffs?: Prisma.staffsCreateNestedOneWithoutOrdersInput
+  order_items?: Prisma.order_itemsCreateNestedManyWithoutOrdersInput
+  invoices?: Prisma.invoicesCreateNestedManyWithoutOrdersInput
+}
+
+export type ordersUncheckedCreateWithoutPaymentsInput = {
+  id?: number
+  order_date?: Date | string | null
+  created_at?: Date | string
+  service_status?: $Enums.OrderServiceStatus | null
+  payment_status?: $Enums.PaymentStatus | null
+  customer_id: number
+  vehicle_id: number
+  staff_id?: number | null
+  check_in_time?: string | null
+  order_items?: Prisma.order_itemsUncheckedCreateNestedManyWithoutOrdersInput
+  invoices?: Prisma.invoicesUncheckedCreateNestedManyWithoutOrdersInput
+}
+
+export type ordersCreateOrConnectWithoutPaymentsInput = {
+  where: Prisma.ordersWhereUniqueInput
+  create: Prisma.XOR<Prisma.ordersCreateWithoutPaymentsInput, Prisma.ordersUncheckedCreateWithoutPaymentsInput>
+}
+
+export type ordersUpsertWithoutPaymentsInput = {
+  update: Prisma.XOR<Prisma.ordersUpdateWithoutPaymentsInput, Prisma.ordersUncheckedUpdateWithoutPaymentsInput>
+  create: Prisma.XOR<Prisma.ordersCreateWithoutPaymentsInput, Prisma.ordersUncheckedCreateWithoutPaymentsInput>
+  where?: Prisma.ordersWhereInput
+}
+
+export type ordersUpdateToOneWithWhereWithoutPaymentsInput = {
+  where?: Prisma.ordersWhereInput
+  data: Prisma.XOR<Prisma.ordersUpdateWithoutPaymentsInput, Prisma.ordersUncheckedUpdateWithoutPaymentsInput>
+}
+
+export type ordersUpdateWithoutPaymentsInput = {
+  order_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  service_status?: Prisma.NullableEnumOrderServiceStatusFieldUpdateOperationsInput | $Enums.OrderServiceStatus | null
+  payment_status?: Prisma.NullableEnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus | null
+  check_in_time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  customers?: Prisma.customersUpdateOneRequiredWithoutOrdersNestedInput
+  vehicles?: Prisma.vehiclesUpdateOneRequiredWithoutOrdersNestedInput
+  staffs?: Prisma.staffsUpdateOneWithoutOrdersNestedInput
+  order_items?: Prisma.order_itemsUpdateManyWithoutOrdersNestedInput
+  invoices?: Prisma.invoicesUpdateManyWithoutOrdersNestedInput
+}
+
+export type ordersUncheckedUpdateWithoutPaymentsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  order_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  service_status?: Prisma.NullableEnumOrderServiceStatusFieldUpdateOperationsInput | $Enums.OrderServiceStatus | null
+  payment_status?: Prisma.NullableEnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus | null
+  customer_id?: Prisma.IntFieldUpdateOperationsInput | number
+  vehicle_id?: Prisma.IntFieldUpdateOperationsInput | number
+  staff_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  check_in_time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  order_items?: Prisma.order_itemsUncheckedUpdateManyWithoutOrdersNestedInput
+  invoices?: Prisma.invoicesUncheckedUpdateManyWithoutOrdersNestedInput
+}
+
+export type ordersCreateWithoutInvoicesInput = {
+  order_date?: Date | string | null
+  created_at?: Date | string
+  service_status?: $Enums.OrderServiceStatus | null
+  payment_status?: $Enums.PaymentStatus | null
+  check_in_time?: string | null
+  customers: Prisma.customersCreateNestedOneWithoutOrdersInput
+  vehicles: Prisma.vehiclesCreateNestedOneWithoutOrdersInput
+  staffs?: Prisma.staffsCreateNestedOneWithoutOrdersInput
+  order_items?: Prisma.order_itemsCreateNestedManyWithoutOrdersInput
+  payments?: Prisma.paymentsCreateNestedManyWithoutOrdersInput
+}
+
+export type ordersUncheckedCreateWithoutInvoicesInput = {
+  id?: number
+  order_date?: Date | string | null
+  created_at?: Date | string
+  service_status?: $Enums.OrderServiceStatus | null
+  payment_status?: $Enums.PaymentStatus | null
+  customer_id: number
+  vehicle_id: number
+  staff_id?: number | null
+  check_in_time?: string | null
+  order_items?: Prisma.order_itemsUncheckedCreateNestedManyWithoutOrdersInput
+  payments?: Prisma.paymentsUncheckedCreateNestedManyWithoutOrdersInput
+}
+
+export type ordersCreateOrConnectWithoutInvoicesInput = {
+  where: Prisma.ordersWhereUniqueInput
+  create: Prisma.XOR<Prisma.ordersCreateWithoutInvoicesInput, Prisma.ordersUncheckedCreateWithoutInvoicesInput>
+}
+
+export type ordersUpsertWithoutInvoicesInput = {
+  update: Prisma.XOR<Prisma.ordersUpdateWithoutInvoicesInput, Prisma.ordersUncheckedUpdateWithoutInvoicesInput>
+  create: Prisma.XOR<Prisma.ordersCreateWithoutInvoicesInput, Prisma.ordersUncheckedCreateWithoutInvoicesInput>
+  where?: Prisma.ordersWhereInput
+}
+
+export type ordersUpdateToOneWithWhereWithoutInvoicesInput = {
+  where?: Prisma.ordersWhereInput
+  data: Prisma.XOR<Prisma.ordersUpdateWithoutInvoicesInput, Prisma.ordersUncheckedUpdateWithoutInvoicesInput>
+}
+
+export type ordersUpdateWithoutInvoicesInput = {
+  order_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  service_status?: Prisma.NullableEnumOrderServiceStatusFieldUpdateOperationsInput | $Enums.OrderServiceStatus | null
+  payment_status?: Prisma.NullableEnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus | null
+  check_in_time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  customers?: Prisma.customersUpdateOneRequiredWithoutOrdersNestedInput
+  vehicles?: Prisma.vehiclesUpdateOneRequiredWithoutOrdersNestedInput
+  staffs?: Prisma.staffsUpdateOneWithoutOrdersNestedInput
+  order_items?: Prisma.order_itemsUpdateManyWithoutOrdersNestedInput
+  payments?: Prisma.paymentsUpdateManyWithoutOrdersNestedInput
+}
+
+export type ordersUncheckedUpdateWithoutInvoicesInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  order_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  service_status?: Prisma.NullableEnumOrderServiceStatusFieldUpdateOperationsInput | $Enums.OrderServiceStatus | null
+  payment_status?: Prisma.NullableEnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus | null
+  customer_id?: Prisma.IntFieldUpdateOperationsInput | number
+  vehicle_id?: Prisma.IntFieldUpdateOperationsInput | number
+  staff_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  check_in_time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  order_items?: Prisma.order_itemsUncheckedUpdateManyWithoutOrdersNestedInput
+  payments?: Prisma.paymentsUncheckedUpdateManyWithoutOrdersNestedInput
+}
+
 export type ordersCreateManyCustomersInput = {
   id?: number
   order_date?: Date | string | null
-  service_status?: string | null
-  payment_status?: string | null
+  created_at?: Date | string
+  service_status?: $Enums.OrderServiceStatus | null
+  payment_status?: $Enums.PaymentStatus | null
   vehicle_id: number
   staff_id?: number | null
   check_in_time?: string | null
@@ -1017,80 +1067,38 @@ export type ordersCreateManyCustomersInput = {
 
 export type ordersUpdateWithoutCustomersInput = {
   order_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  service_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  payment_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  service_status?: Prisma.NullableEnumOrderServiceStatusFieldUpdateOperationsInput | $Enums.OrderServiceStatus | null
+  payment_status?: Prisma.NullableEnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus | null
   check_in_time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  invoices?: Prisma.invoicesUpdateManyWithoutOrdersNestedInput
-  order_items?: Prisma.order_itemsUpdateManyWithoutOrdersNestedInput
-  payments?: Prisma.paymentsUpdateManyWithoutOrdersNestedInput
   vehicles?: Prisma.vehiclesUpdateOneRequiredWithoutOrdersNestedInput
   staffs?: Prisma.staffsUpdateOneWithoutOrdersNestedInput
+  order_items?: Prisma.order_itemsUpdateManyWithoutOrdersNestedInput
+  payments?: Prisma.paymentsUpdateManyWithoutOrdersNestedInput
+  invoices?: Prisma.invoicesUpdateManyWithoutOrdersNestedInput
 }
 
 export type ordersUncheckedUpdateWithoutCustomersInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   order_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  service_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  payment_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  service_status?: Prisma.NullableEnumOrderServiceStatusFieldUpdateOperationsInput | $Enums.OrderServiceStatus | null
+  payment_status?: Prisma.NullableEnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus | null
   vehicle_id?: Prisma.IntFieldUpdateOperationsInput | number
   staff_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   check_in_time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  invoices?: Prisma.invoicesUncheckedUpdateManyWithoutOrdersNestedInput
   order_items?: Prisma.order_itemsUncheckedUpdateManyWithoutOrdersNestedInput
   payments?: Prisma.paymentsUncheckedUpdateManyWithoutOrdersNestedInput
+  invoices?: Prisma.invoicesUncheckedUpdateManyWithoutOrdersNestedInput
 }
 
 export type ordersUncheckedUpdateManyWithoutCustomersInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   order_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  service_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  payment_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  service_status?: Prisma.NullableEnumOrderServiceStatusFieldUpdateOperationsInput | $Enums.OrderServiceStatus | null
+  payment_status?: Prisma.NullableEnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus | null
   vehicle_id?: Prisma.IntFieldUpdateOperationsInput | number
-  staff_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  check_in_time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-}
-
-export type ordersCreateManyVehiclesInput = {
-  id?: number
-  order_date?: Date | string | null
-  service_status?: string | null
-  payment_status?: string | null
-  customer_id: number
-  staff_id?: number | null
-  check_in_time?: string | null
-}
-
-export type ordersUpdateWithoutVehiclesInput = {
-  order_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  service_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  payment_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  check_in_time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  invoices?: Prisma.invoicesUpdateManyWithoutOrdersNestedInput
-  order_items?: Prisma.order_itemsUpdateManyWithoutOrdersNestedInput
-  payments?: Prisma.paymentsUpdateManyWithoutOrdersNestedInput
-  customers?: Prisma.customersUpdateOneRequiredWithoutOrdersNestedInput
-  staffs?: Prisma.staffsUpdateOneWithoutOrdersNestedInput
-}
-
-export type ordersUncheckedUpdateWithoutVehiclesInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  order_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  service_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  payment_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  customer_id?: Prisma.IntFieldUpdateOperationsInput | number
-  staff_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  check_in_time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  invoices?: Prisma.invoicesUncheckedUpdateManyWithoutOrdersNestedInput
-  order_items?: Prisma.order_itemsUncheckedUpdateManyWithoutOrdersNestedInput
-  payments?: Prisma.paymentsUncheckedUpdateManyWithoutOrdersNestedInput
-}
-
-export type ordersUncheckedUpdateManyWithoutVehiclesInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  order_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  service_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  payment_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  customer_id?: Prisma.IntFieldUpdateOperationsInput | number
   staff_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   check_in_time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
@@ -1098,8 +1106,9 @@ export type ordersUncheckedUpdateManyWithoutVehiclesInput = {
 export type ordersCreateManyStaffsInput = {
   id?: number
   order_date?: Date | string | null
-  service_status?: string | null
-  payment_status?: string | null
+  created_at?: Date | string
+  service_status?: $Enums.OrderServiceStatus | null
+  payment_status?: $Enums.PaymentStatus | null
   customer_id: number
   vehicle_id: number
   check_in_time?: string | null
@@ -1107,36 +1116,88 @@ export type ordersCreateManyStaffsInput = {
 
 export type ordersUpdateWithoutStaffsInput = {
   order_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  service_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  payment_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  service_status?: Prisma.NullableEnumOrderServiceStatusFieldUpdateOperationsInput | $Enums.OrderServiceStatus | null
+  payment_status?: Prisma.NullableEnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus | null
   check_in_time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  invoices?: Prisma.invoicesUpdateManyWithoutOrdersNestedInput
-  order_items?: Prisma.order_itemsUpdateManyWithoutOrdersNestedInput
-  payments?: Prisma.paymentsUpdateManyWithoutOrdersNestedInput
   customers?: Prisma.customersUpdateOneRequiredWithoutOrdersNestedInput
   vehicles?: Prisma.vehiclesUpdateOneRequiredWithoutOrdersNestedInput
+  order_items?: Prisma.order_itemsUpdateManyWithoutOrdersNestedInput
+  payments?: Prisma.paymentsUpdateManyWithoutOrdersNestedInput
+  invoices?: Prisma.invoicesUpdateManyWithoutOrdersNestedInput
 }
 
 export type ordersUncheckedUpdateWithoutStaffsInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   order_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  service_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  payment_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  service_status?: Prisma.NullableEnumOrderServiceStatusFieldUpdateOperationsInput | $Enums.OrderServiceStatus | null
+  payment_status?: Prisma.NullableEnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus | null
   customer_id?: Prisma.IntFieldUpdateOperationsInput | number
   vehicle_id?: Prisma.IntFieldUpdateOperationsInput | number
   check_in_time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  invoices?: Prisma.invoicesUncheckedUpdateManyWithoutOrdersNestedInput
   order_items?: Prisma.order_itemsUncheckedUpdateManyWithoutOrdersNestedInput
   payments?: Prisma.paymentsUncheckedUpdateManyWithoutOrdersNestedInput
+  invoices?: Prisma.invoicesUncheckedUpdateManyWithoutOrdersNestedInput
 }
 
 export type ordersUncheckedUpdateManyWithoutStaffsInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   order_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  service_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  payment_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  service_status?: Prisma.NullableEnumOrderServiceStatusFieldUpdateOperationsInput | $Enums.OrderServiceStatus | null
+  payment_status?: Prisma.NullableEnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus | null
   customer_id?: Prisma.IntFieldUpdateOperationsInput | number
   vehicle_id?: Prisma.IntFieldUpdateOperationsInput | number
+  check_in_time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type ordersCreateManyVehiclesInput = {
+  id?: number
+  order_date?: Date | string | null
+  created_at?: Date | string
+  service_status?: $Enums.OrderServiceStatus | null
+  payment_status?: $Enums.PaymentStatus | null
+  customer_id: number
+  staff_id?: number | null
+  check_in_time?: string | null
+}
+
+export type ordersUpdateWithoutVehiclesInput = {
+  order_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  service_status?: Prisma.NullableEnumOrderServiceStatusFieldUpdateOperationsInput | $Enums.OrderServiceStatus | null
+  payment_status?: Prisma.NullableEnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus | null
+  check_in_time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  customers?: Prisma.customersUpdateOneRequiredWithoutOrdersNestedInput
+  staffs?: Prisma.staffsUpdateOneWithoutOrdersNestedInput
+  order_items?: Prisma.order_itemsUpdateManyWithoutOrdersNestedInput
+  payments?: Prisma.paymentsUpdateManyWithoutOrdersNestedInput
+  invoices?: Prisma.invoicesUpdateManyWithoutOrdersNestedInput
+}
+
+export type ordersUncheckedUpdateWithoutVehiclesInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  order_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  service_status?: Prisma.NullableEnumOrderServiceStatusFieldUpdateOperationsInput | $Enums.OrderServiceStatus | null
+  payment_status?: Prisma.NullableEnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus | null
+  customer_id?: Prisma.IntFieldUpdateOperationsInput | number
+  staff_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  check_in_time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  order_items?: Prisma.order_itemsUncheckedUpdateManyWithoutOrdersNestedInput
+  payments?: Prisma.paymentsUncheckedUpdateManyWithoutOrdersNestedInput
+  invoices?: Prisma.invoicesUncheckedUpdateManyWithoutOrdersNestedInput
+}
+
+export type ordersUncheckedUpdateManyWithoutVehiclesInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  order_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  service_status?: Prisma.NullableEnumOrderServiceStatusFieldUpdateOperationsInput | $Enums.OrderServiceStatus | null
+  payment_status?: Prisma.NullableEnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus | null
+  customer_id?: Prisma.IntFieldUpdateOperationsInput | number
+  staff_id?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   check_in_time?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
@@ -1146,15 +1207,15 @@ export type ordersUncheckedUpdateManyWithoutStaffsInput = {
  */
 
 export type OrdersCountOutputType = {
-  invoices: number
   order_items: number
   payments: number
+  invoices: number
 }
 
 export type OrdersCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  invoices?: boolean | OrdersCountOutputTypeCountInvoicesArgs
   order_items?: boolean | OrdersCountOutputTypeCountOrder_itemsArgs
   payments?: boolean | OrdersCountOutputTypeCountPaymentsArgs
+  invoices?: boolean | OrdersCountOutputTypeCountInvoicesArgs
 }
 
 /**
@@ -1165,13 +1226,6 @@ export type OrdersCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Exten
    * Select specific fields to fetch from the OrdersCountOutputType
    */
   select?: Prisma.OrdersCountOutputTypeSelect<ExtArgs> | null
-}
-
-/**
- * OrdersCountOutputType without action
- */
-export type OrdersCountOutputTypeCountInvoicesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.invoicesWhereInput
 }
 
 /**
@@ -1188,28 +1242,37 @@ export type OrdersCountOutputTypeCountPaymentsArgs<ExtArgs extends runtime.Types
   where?: Prisma.paymentsWhereInput
 }
 
+/**
+ * OrdersCountOutputType without action
+ */
+export type OrdersCountOutputTypeCountInvoicesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.invoicesWhereInput
+}
+
 
 export type ordersSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   order_date?: boolean
+  created_at?: boolean
   service_status?: boolean
   payment_status?: boolean
   customer_id?: boolean
   vehicle_id?: boolean
   staff_id?: boolean
   check_in_time?: boolean
-  invoices?: boolean | Prisma.orders$invoicesArgs<ExtArgs>
-  order_items?: boolean | Prisma.orders$order_itemsArgs<ExtArgs>
-  payments?: boolean | Prisma.orders$paymentsArgs<ExtArgs>
   customers?: boolean | Prisma.customersDefaultArgs<ExtArgs>
   vehicles?: boolean | Prisma.vehiclesDefaultArgs<ExtArgs>
   staffs?: boolean | Prisma.orders$staffsArgs<ExtArgs>
+  order_items?: boolean | Prisma.orders$order_itemsArgs<ExtArgs>
+  payments?: boolean | Prisma.orders$paymentsArgs<ExtArgs>
+  invoices?: boolean | Prisma.orders$invoicesArgs<ExtArgs>
   _count?: boolean | Prisma.OrdersCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["orders"]>
 
 export type ordersSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   order_date?: boolean
+  created_at?: boolean
   service_status?: boolean
   payment_status?: boolean
   customer_id?: boolean
@@ -1224,6 +1287,7 @@ export type ordersSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
 export type ordersSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   order_date?: boolean
+  created_at?: boolean
   service_status?: boolean
   payment_status?: boolean
   customer_id?: boolean
@@ -1238,6 +1302,7 @@ export type ordersSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
 export type ordersSelectScalar = {
   id?: boolean
   order_date?: boolean
+  created_at?: boolean
   service_status?: boolean
   payment_status?: boolean
   customer_id?: boolean
@@ -1246,14 +1311,14 @@ export type ordersSelectScalar = {
   check_in_time?: boolean
 }
 
-export type ordersOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "order_date" | "service_status" | "payment_status" | "customer_id" | "vehicle_id" | "staff_id" | "check_in_time", ExtArgs["result"]["orders"]>
+export type ordersOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "order_date" | "created_at" | "service_status" | "payment_status" | "customer_id" | "vehicle_id" | "staff_id" | "check_in_time", ExtArgs["result"]["orders"]>
 export type ordersInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  invoices?: boolean | Prisma.orders$invoicesArgs<ExtArgs>
-  order_items?: boolean | Prisma.orders$order_itemsArgs<ExtArgs>
-  payments?: boolean | Prisma.orders$paymentsArgs<ExtArgs>
   customers?: boolean | Prisma.customersDefaultArgs<ExtArgs>
   vehicles?: boolean | Prisma.vehiclesDefaultArgs<ExtArgs>
   staffs?: boolean | Prisma.orders$staffsArgs<ExtArgs>
+  order_items?: boolean | Prisma.orders$order_itemsArgs<ExtArgs>
+  payments?: boolean | Prisma.orders$paymentsArgs<ExtArgs>
+  invoices?: boolean | Prisma.orders$invoicesArgs<ExtArgs>
   _count?: boolean | Prisma.OrdersCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ordersIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1270,18 +1335,19 @@ export type ordersIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
 export type $ordersPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "orders"
   objects: {
-    invoices: Prisma.$invoicesPayload<ExtArgs>[]
-    order_items: Prisma.$order_itemsPayload<ExtArgs>[]
-    payments: Prisma.$paymentsPayload<ExtArgs>[]
     customers: Prisma.$customersPayload<ExtArgs>
     vehicles: Prisma.$vehiclesPayload<ExtArgs>
     staffs: Prisma.$staffsPayload<ExtArgs> | null
+    order_items: Prisma.$order_itemsPayload<ExtArgs>[]
+    payments: Prisma.$paymentsPayload<ExtArgs>[]
+    invoices: Prisma.$invoicesPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
     order_date: Date | null
-    service_status: string | null
-    payment_status: string | null
+    created_at: Date
+    service_status: $Enums.OrderServiceStatus | null
+    payment_status: $Enums.PaymentStatus | null
     customer_id: number
     vehicle_id: number
     staff_id: number | null
@@ -1680,12 +1746,12 @@ readonly fields: ordersFieldRefs;
  */
 export interface Prisma__ordersClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  invoices<T extends Prisma.orders$invoicesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.orders$invoicesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$invoicesPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  order_items<T extends Prisma.orders$order_itemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.orders$order_itemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$order_itemsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  payments<T extends Prisma.orders$paymentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.orders$paymentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$paymentsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   customers<T extends Prisma.customersDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.customersDefaultArgs<ExtArgs>>): Prisma.Prisma__customersClient<runtime.Types.Result.GetResult<Prisma.$customersPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   vehicles<T extends Prisma.vehiclesDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.vehiclesDefaultArgs<ExtArgs>>): Prisma.Prisma__vehiclesClient<runtime.Types.Result.GetResult<Prisma.$vehiclesPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   staffs<T extends Prisma.orders$staffsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.orders$staffsArgs<ExtArgs>>): Prisma.Prisma__staffsClient<runtime.Types.Result.GetResult<Prisma.$staffsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  order_items<T extends Prisma.orders$order_itemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.orders$order_itemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$order_itemsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  payments<T extends Prisma.orders$paymentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.orders$paymentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$paymentsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  invoices<T extends Prisma.orders$invoicesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.orders$invoicesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$invoicesPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1717,8 +1783,9 @@ export interface Prisma__ordersClient<T, Null = never, ExtArgs extends runtime.T
 export interface ordersFieldRefs {
   readonly id: Prisma.FieldRef<"orders", 'Int'>
   readonly order_date: Prisma.FieldRef<"orders", 'DateTime'>
-  readonly service_status: Prisma.FieldRef<"orders", 'String'>
-  readonly payment_status: Prisma.FieldRef<"orders", 'String'>
+  readonly created_at: Prisma.FieldRef<"orders", 'DateTime'>
+  readonly service_status: Prisma.FieldRef<"orders", 'OrderServiceStatus'>
+  readonly payment_status: Prisma.FieldRef<"orders", 'PaymentStatus'>
   readonly customer_id: Prisma.FieldRef<"orders", 'Int'>
   readonly vehicle_id: Prisma.FieldRef<"orders", 'Int'>
   readonly staff_id: Prisma.FieldRef<"orders", 'Int'>
@@ -2124,27 +2191,22 @@ export type ordersDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Intern
 }
 
 /**
- * orders.invoices
+ * orders.staffs
  */
-export type orders$invoicesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type orders$staffsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the invoices
+   * Select specific fields to fetch from the staffs
    */
-  select?: Prisma.invoicesSelect<ExtArgs> | null
+  select?: Prisma.staffsSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the invoices
+   * Omit specific fields from the staffs
    */
-  omit?: Prisma.invoicesOmit<ExtArgs> | null
+  omit?: Prisma.staffsOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.invoicesInclude<ExtArgs> | null
-  where?: Prisma.invoicesWhereInput
-  orderBy?: Prisma.invoicesOrderByWithRelationInput | Prisma.invoicesOrderByWithRelationInput[]
-  cursor?: Prisma.invoicesWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.InvoicesScalarFieldEnum | Prisma.InvoicesScalarFieldEnum[]
+  include?: Prisma.staffsInclude<ExtArgs> | null
+  where?: Prisma.staffsWhereInput
 }
 
 /**
@@ -2196,22 +2258,27 @@ export type orders$paymentsArgs<ExtArgs extends runtime.Types.Extensions.Interna
 }
 
 /**
- * orders.staffs
+ * orders.invoices
  */
-export type orders$staffsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type orders$invoicesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the staffs
+   * Select specific fields to fetch from the invoices
    */
-  select?: Prisma.staffsSelect<ExtArgs> | null
+  select?: Prisma.invoicesSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the staffs
+   * Omit specific fields from the invoices
    */
-  omit?: Prisma.staffsOmit<ExtArgs> | null
+  omit?: Prisma.invoicesOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.staffsInclude<ExtArgs> | null
-  where?: Prisma.staffsWhereInput
+  include?: Prisma.invoicesInclude<ExtArgs> | null
+  where?: Prisma.invoicesWhereInput
+  orderBy?: Prisma.invoicesOrderByWithRelationInput | Prisma.invoicesOrderByWithRelationInput[]
+  cursor?: Prisma.invoicesWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.InvoicesScalarFieldEnum | Prisma.InvoicesScalarFieldEnum[]
 }
 
 /**

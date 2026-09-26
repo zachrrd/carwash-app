@@ -1,10 +1,22 @@
 import { useEffect, useState } from "react";
-import { Eye, CreditCard, Banknote, Wallet } from "lucide-react";
+import {
+  Eye,
+  Calendar,
+  CalendarDays,
+  CalendarRange,
+  Coins,
+} from "lucide-react";
 
-import { getPayments } from "@/services/payment.service";
+import {
+  getPayments,
+  getRevenueSummary,
+  type RevenueSummaryData,
+} from "@/services/payment.service";
+
 import type { Payment, PaymentMethod } from "@/types/payment";
 
 import { Button } from "@/components/ui/button";
+
 import {
   Card,
   CardContent,
@@ -44,23 +56,44 @@ export default function Payments() {
 
   const [detailOpen, setDetailOpen] = useState(false);
 
+  const [revenueData, setRevenueData] =
+    useState<RevenueSummaryData | null>(null);
+
   useEffect(() => {
     const fetchPayments = async () => {
       try {
         setLoading(true);
         setError(null);
 
-        const response = await getPayments(page, 10);
+        const [paymentResponse, revenueResponse] =
+          await Promise.all([
+            getPayments(page, 10),
+            getRevenueSummary().catch((err) => {
+              console.error("REVENUE SUMMARY ERROR:", err);
+              return null;
+            }),
+          ]);
 
-        console.log("PAYMENT RESPONSE:", response.data);
+        console.log(
+          "PAYMENT RESPONSE:",
+          paymentResponse.data,
+        );
 
-        const paymentData = response.data.data;
+        const paymentData = paymentResponse.data.data;
 
         setPayments(paymentData.data ?? []);
-        setTotalPayments(paymentData.pagination?.total ?? 0);
-        setTotalPages(paymentData.pagination?.totalPages ?? 1);
-      } catch (error) {
-        console.error("PAYMENT FETCH ERROR:", error);
+        setTotalPayments(
+          paymentData.pagination?.total ?? 0,
+        );
+        setTotalPages(
+          paymentData.pagination?.totalPages ?? 1,
+        );
+
+        if (revenueResponse?.data?.data) {
+          setRevenueData(revenueResponse.data.data);
+        }
+      } catch (err) {
+        console.error("PAYMENT FETCH ERROR:", err);
         setError("Payment data failed to fetch.");
       } finally {
         setLoading(false);
@@ -83,7 +116,9 @@ export default function Payments() {
     }).format(Number(value) || 0);
   };
 
-  const getPaymentMethodLabel = (method: PaymentMethod) => {
+  const getPaymentMethodLabel = (
+    method: PaymentMethod,
+  ) => {
     switch (method) {
       case "CASH":
         return "Cash";
@@ -96,23 +131,10 @@ export default function Payments() {
     }
   };
 
-  const totalRevenue = payments.reduce(
-    (total, payment) =>
-      total +
-      Number(payment.amount_received) -
-      Number(payment.change_amount),
-    0,
-  );
-
-  const totalReceived = payments.reduce(
-    (total, payment) =>
-      total + Number(payment.amount_received),
-    0,
-  );
-
   const getOrderTotal = (payment: Payment) => {
     return payment.orders.order_items.reduce(
-      (total, item) => total + Number(item.subtotal),
+      (total, item) =>
+        total + Number(item.subtotal),
       0,
     );
   };
@@ -137,7 +159,6 @@ export default function Payments() {
 
   return (
     <div className="space-y-6">
-      {/* HEADER */}
       <div>
         <h1 className="text-2xl font-bold tracking-tight">
           Payments
@@ -148,73 +169,146 @@ export default function Payments() {
         </p>
       </div>
 
-      {/* SUMMARY */}
-      <div className="grid gap-4 md:grid-cols-3">
-        {/* TOTAL PAYMENTS */}
-        <Card>
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <Card className="border-border/70 shadow-sm transition-all hover:border-primary/30">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">
-              Total Payments
-            </CardTitle>
+            <div>
+              <CardTitle className="text-sm font-medium">
+                Revenue
+              </CardTitle>
 
-            <CreditCard className="h-5 w-5 text-muted-foreground" />
+              <span className="text-xs font-medium text-muted-foreground">
+                Hari Ini
+              </span>
+            </div>
+
+            <div className="rounded-lg border border-emerald-200 bg-emerald-500/10 p-2 text-emerald-600">
+              <Calendar className="h-4 w-4" />
+            </div>
           </CardHeader>
 
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {totalPayments}
+          <CardContent className="space-y-1">
+            <div className="text-2xl font-extrabold tracking-tight">
+              {formatCurrency(
+                revenueData?.today?.revenue ?? 0,
+              )}
             </div>
 
             <p className="text-xs text-muted-foreground">
-              Successful transactions
+              <span className="font-semibold text-foreground">
+                {revenueData?.today?.count ?? 0}
+              </span>{" "}
+              transaksi lunas hari ini
             </p>
           </CardContent>
         </Card>
 
-        {/* TOTAL RECEIVED */}
-        <Card>
+        <Card className="border-border/70 shadow-sm transition-all hover:border-primary/30">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">
-              Total Received
-            </CardTitle>
+            <div>
+              <CardTitle className="text-sm font-medium">
+                Revenue
+              </CardTitle>
 
-            <Banknote className="h-5 w-5 text-muted-foreground" />
+              <span className="text-xs font-medium text-muted-foreground">
+                Bulan Ini (
+                {revenueData?.month?.monthName ??
+                  "Bulan Ini"}
+                )
+              </span>
+            </div>
+
+            <div className="rounded-lg border border-blue-200 bg-blue-500/10 p-2 text-blue-600">
+              <CalendarDays className="h-4 w-4" />
+            </div>
           </CardHeader>
 
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {formatCurrency(totalReceived)}
+          <CardContent className="space-y-1">
+            <div className="text-2xl font-extrabold tracking-tight">
+              {formatCurrency(
+                revenueData?.month?.revenue ?? 0,
+              )}
             </div>
 
             <p className="text-xs text-muted-foreground">
-              Money received from customers
+              <span className="font-semibold text-foreground">
+                {revenueData?.month?.count ?? 0}
+              </span>{" "}
+              transaksi lunas bulan ini
             </p>
           </CardContent>
         </Card>
 
-        {/* REVENUE */}
-        <Card>
+        <Card className="border-border/70 shadow-sm transition-all hover:border-primary/30">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">
-              Revenue
-            </CardTitle>
+            <div>
+              <CardTitle className="text-sm font-medium">
+                Revenue
+              </CardTitle>
 
-            <Wallet className="h-5 w-5 text-muted-foreground" />
+              <span className="text-xs font-medium text-muted-foreground">
+                Tahun Ini (
+                {revenueData?.year?.year ??
+                  new Date().getFullYear()}
+                )
+              </span>
+            </div>
+
+            <div className="rounded-lg border border-purple-200 bg-purple-500/10 p-2 text-purple-600">
+              <CalendarRange className="h-4 w-4" />
+            </div>
           </CardHeader>
 
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {formatCurrency(totalRevenue)}
+          <CardContent className="space-y-1">
+            <div className="text-2xl font-extrabold tracking-tight">
+              {formatCurrency(
+                revenueData?.year?.revenue ?? 0,
+              )}
             </div>
 
             <p className="text-xs text-muted-foreground">
-              Net payment value
+              <span className="font-semibold text-foreground">
+                {revenueData?.year?.count ?? 0}
+              </span>{" "}
+              transaksi lunas tahun ini
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className="border-border/70 shadow-sm transition-all hover:border-primary/30">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <div>
+              <CardTitle className="text-sm font-medium">
+                Total Revenue
+              </CardTitle>
+
+              <span className="text-xs font-medium text-muted-foreground">
+                All-Time
+              </span>
+            </div>
+
+            <div className="rounded-lg border border-orange-200 bg-orange-500/10 p-2 text-orange-600">
+              <Coins className="h-4 w-4" />
+            </div>
+          </CardHeader>
+
+          <CardContent className="space-y-1">
+            <div className="text-2xl font-extrabold tracking-tight">
+              {formatCurrency(
+                revenueData?.allTime?.revenue ?? 0,
+              )}
+            </div>
+
+            <p className="text-xs text-muted-foreground">
+              <span className="font-semibold text-foreground">
+                {revenueData?.allTime?.count ?? 0}
+              </span>{" "}
+              total transaksi lunas
             </p>
           </CardContent>
         </Card>
       </div>
 
-      {/* PAYMENT TABLE */}
       <Card>
         <CardHeader>
           <CardTitle>Payment Transactions</CardTitle>
@@ -249,17 +343,14 @@ export default function Payments() {
 
                     return (
                       <TableRow key={payment.id}>
-                        {/* PAYMENT */}
                         <TableCell className="font-medium">
                           #{payment.id}
                         </TableCell>
 
-                        {/* ORDER */}
                         <TableCell>
                           #{order.id}
                         </TableCell>
 
-                        {/* CUSTOMER */}
                         <TableCell>
                           <div>
                             <p className="font-medium">
@@ -272,7 +363,6 @@ export default function Payments() {
                           </div>
                         </TableCell>
 
-                        {/* VEHICLE */}
                         <TableCell>
                           <div>
                             <p className="font-medium">
@@ -286,15 +376,17 @@ export default function Payments() {
                           </div>
                         </TableCell>
 
-                        {/* AMOUNT */}
                         <TableCell className="font-medium">
                           {formatCurrency(
-                            Number(payment.amount_received) -
-                              Number(payment.change_amount),
+                            Number(
+                              payment.amount_received,
+                            ) -
+                              Number(
+                                payment.change_amount,
+                              ),
                           )}
                         </TableCell>
 
-                        {/* METHOD */}
                         <TableCell>
                           <Badge variant="outline">
                             {getPaymentMethodLabel(
@@ -303,14 +395,12 @@ export default function Payments() {
                           </Badge>
                         </TableCell>
 
-                        {/* STATUS */}
                         <TableCell>
                           <Badge className="border-green-200 bg-green-50 text-green-700 hover:bg-green-50">
                             Paid
                           </Badge>
                         </TableCell>
 
-                        {/* ACTION */}
                         <TableCell className="text-right">
                           <Button
                             variant="ghost"
@@ -332,7 +422,6 @@ export default function Payments() {
                 </TableBody>
               </Table>
 
-              {/* PAGINATION */}
               <div className="flex items-center justify-between border-t pt-4">
                 <p className="text-sm text-muted-foreground">
                   Page {page} of {totalPages}
@@ -367,7 +456,6 @@ export default function Payments() {
         </CardContent>
       </Card>
 
-      {/* DETAIL DIALOG */}
       <Dialog
         open={detailOpen}
         onOpenChange={setDetailOpen}
@@ -382,7 +470,6 @@ export default function Payments() {
               </DialogHeader>
 
               <div className="space-y-6">
-                {/* ORDER INFO */}
                 <div className="rounded-lg border bg-muted/30 p-4">
                   <div className="flex items-start justify-between">
                     <div>
@@ -407,7 +494,10 @@ export default function Payments() {
                       </p>
 
                       <p className="text-sm font-medium">
-                        {selectedPayment.orders.customers.name}
+                        {
+                          selectedPayment.orders
+                            .customers.name
+                        }
                       </p>
                     </div>
 
@@ -426,7 +516,6 @@ export default function Payments() {
                   </div>
                 </div>
 
-                {/* SERVICES */}
                 <div>
                   <h3 className="mb-3 text-sm font-semibold">
                     Services
@@ -461,10 +550,8 @@ export default function Payments() {
                   </div>
                 </div>
 
-                {/* PAYMENT INFO */}
                 <div className="border-t pt-4">
                   <div className="space-y-2">
-                    {/* TOTAL */}
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">
                         Total
@@ -472,12 +559,13 @@ export default function Payments() {
 
                       <span className="font-semibold">
                         {formatCurrency(
-                          getOrderTotal(selectedPayment),
+                          getOrderTotal(
+                            selectedPayment,
+                          ),
                         )}
                       </span>
                     </div>
 
-                    {/* AMOUNT RECEIVED */}
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">
                         Amount Received
@@ -490,7 +578,6 @@ export default function Payments() {
                       </span>
                     </div>
 
-                    {/* CHANGE */}
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">
                         Change
@@ -503,7 +590,6 @@ export default function Payments() {
                       </span>
                     </div>
 
-                    {/* PAYMENT METHOD */}
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">
                         Payment Method
@@ -516,7 +602,6 @@ export default function Payments() {
                       </Badge>
                     </div>
 
-                    {/* PAYMENT DATE */}
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">
                         Payment Date

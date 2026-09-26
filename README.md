@@ -11,7 +11,7 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![Midtrans](https://img.shields.io/badge/Midtrans-Payment_Gateway-002B49?style=for-the-badge)](https://midtrans.com/)
 
-> **An enterprise-grade, omnichannel car wash management platform** that bridges back-office administration, customer self-service booking with automated payment gateways, and on-the-ground operational staff via real-time mobile app tracking.
+> **A full-stack car wash management system** for customer bookings, cashier and admin operations, staff workflows, and payment tracking.
 
 ---
 
@@ -32,7 +32,7 @@
                                                   ▼
 ┌──────────────────────┐               ┌──────────────────────┐               ┌──────────────────────┐
 │  Customer Web App    │               │  Backend API Engine  │               │   Mobile Staff App   │
-│  (React 18 + Vite)   │ ◄──WebSocket─►│ (Express 5+TS+Prisma)│ ◄──WebSocket─►│ (React Native+Expo)  │
+│  (React + Vite)      │ ◄──WebSocket─►│ (Express 5+TS+Prisma)│ ◄──WebSocket─►│ (React Native+Expo)  │
 │  - Self Booking      │ ◄────REST────►│ - Auth & RBAC (JWT)  │ ◄────REST────►│ - Order Queue        │
 │  - Midtrans Payment  │               │ - Socket.IO Rooms    │               │ - Status Progress    │
 │  - Live Order Status │               │ - PDF Invoicing      │               │ - Staff Assignment   │
@@ -42,7 +42,7 @@
                                                   │
                                        ┌──────────▼───────────┐
                                        │   Admin Web Portal   │
-                                       │  (React 18 + Vite)   │
+                                       │  (React + Vite)      │
                                        │ - Live Queue Monitor │
                                        │ - Cash & POS Settle  │
                                        │ - Trash & Analytics  │
@@ -58,8 +58,8 @@ Project ini terbagi dalam 3 sub-sistem utama yang dapat dijalankan secara indepe
 | Folder / Repo | Komponen | Deskripsi & Tech Stack |
 |---|---|---|
 | [`/backend`](./backend) | **Core REST & WebSocket API** | Express 5, TypeScript, Prisma ORM, PostgreSQL, Socket.IO, Midtrans SDK, PDFKit, ImageKit. |
-| [`/frontend`](./frontend) | **Web Portals (Admin & Customer)** | Dual React 18 + Vite apps: **Admin/Cashier Dashboard** dan **Customer Self-Service Portal**. |
-| [`/mobile`](./mobile) | **Floor & Staff Mobile App** | React Native, Expo Router, NativeWind (Tailwind), SecureStore, PDF Print & Share. |
+| [`/frontend`](./frontend) | **Web Portals (Admin & Customer)** | Dua aplikasi React + Vite: **Admin/Cashier Dashboard** dan **Customer Self-Service Portal**. |
+| [carwash-mobile](https://github.com/zachrrd/carwash-mobile) | **Floor & Staff Mobile App** | Repo terpisah berbasis React Native, Expo Router, NativeWind, SecureStore, serta fitur cetak dan berbagi invoice PDF. |
 
 ---
 
@@ -73,7 +73,7 @@ Project ini terbagi dalam 3 sub-sistem utama yang dapat dijalankan secara indepe
 
 ### 2. Automated Payment Gateway & Webhook Reconciliation
 - Integrasi resmi dengan **Midtrans Snap API**: Menghasilkan transaction token secara dinamis untuk pembayaran digital (QRIS, BCA/Mandiri/BRI Virtual Account, E-Wallet).
-- **Atomic Webhook Verification**: Memvalidasi SHA-512 Signature Hash dari Midtrans Notification, menjalankan transaksi database atomik via `prisma.$transaction`:
+- **Midtrans Payment Reconciliation**: Memverifikasi status transaksi melalui Midtrans Status API dan mencocokkan nominalnya sebelum mencatat pembayaran secara atomik via `prisma.$transaction`:
   - Mengupdate status `orders` menjadi `PAID` / `CONFIRMED`.
   - Mencatat mutasi di tabel `payments`.
   - Menerbitkan faktur elektronik di tabel `invoices`.
@@ -103,7 +103,7 @@ Project ini terbagi dalam 3 sub-sistem utama yang dapat dijalankan secara indepe
 | **Realtime** | Socket.IO v4 (WebSockets with fallback polling) |
 | **Payment Gateway** | Midtrans Client (Snap API + Webhook Notification Handler) |
 | **Cloud Media** | ImageKit Node SDK (Upload, transformation, & CDN delivery) |
-| **Web Frontend** | React 18, Vite, TypeScript, Tailwind CSS, Lucide Icons, Axios, Sonner / Toast |
+| **Web Frontend** | React, Vite, TypeScript, Tailwind CSS, Lucide Icons, Axios, Sonner / Toast |
 | **Mobile Frontend** | React Native 0.86, Expo SDK 57, Expo Router, NativeWind v4, Expo Secure Store, Expo Print |
 | **Document Engine** | PDFKit (Backend invoice generator) & Expo Sharing (Mobile dispatch) |
 
@@ -123,6 +123,7 @@ Project ini terbagi dalam 3 sub-sistem utama yang dapat dijalankan secara indepe
 ```bash
 git clone https://github.com/zachrrd/carwash-app.git
 cd carwash-app
+git clone https://github.com/zachrrd/carwash-mobile.git mobile
 ```
 
 ---
@@ -152,8 +153,8 @@ MIDTRANS_IS_PRODUCTION=false
 Jalankan migrasi database dan seeding data awal:
 ```bash
 npx prisma generate
-npx prisma migrate dev --name init
-npx tsx prisma/seed.ts
+npx prisma migrate deploy
+npx prisma db seed
 
 # Jalankan server backend
 npm run dev
@@ -205,7 +206,7 @@ Scan QR code menggunakan aplikasi **Expo Go** di Android atau kamera iOS.
 
 ---
 
-## 📁 Monorepo Structure
+## 📁 Repository Structure
 
 ```text
 carwash-app/
@@ -226,24 +227,19 @@ carwash-app/
 │   ├── customer/             # Customer Self-Booking & Order Tracker SPA (Vite + React)
 │   └── README.md
 │
-├── mobile/                   # Floor Operations App (React Native + Expo)
-│   ├── app/                  # Expo Router file-based pages (auth, tabs, order, invoice)
-│   ├── services/             # Axios client, SecureStore, Socket.io listener
-│   ├── components/           # Reusable mobile UI components
-│   ├── package.json
-│   └── README.md
-│
 ├── package.json              # Monorepo root helper scripts
 ├── .gitignore                # Global workspace ignore rules
 └── PRD_Carwash_App.pdf       # Original Product Requirement Document
 ```
 
+The mobile client lives in its own repository: [zachrrd/carwash-mobile](https://github.com/zachrrd/carwash-mobile). Clone it into `mobile/` to use the root `dev:mobile` or `install:all` scripts.
+
 ---
 
 ## 🔒 Security & Data Hygiene
 - **Sanitized Repository**: Berkas kredensial lokal (`.env`), cache editor AI (`.agents`, `.claude`, `.windsurf`), dan build artifacts sepenuhnya di-ignore dari public git history.
-- **Payload Validation**: Seluruh data masuk divalidasi ketat menggunakan schema validator untuk mencegah *malformed requests* atau SQL injection.
-- **Midtrans Signature Verification**: Webhook Midtrans wajib lolos kalkulasi hash `SHA512(order_id + status_code + gross_amount + ServerKey)` sebelum mengubah status pembayaran.
+- **Payload Validation**: Endpoint yang menerima input terstruktur menggunakan validasi dan pemeriksaan tipe sebelum memproses perubahan data.
+- **Midtrans Reconciliation**: Status dan nominal pembayaran dicek kembali melalui Midtrans Status API sebelum database diperbarui.
 
 ---
 

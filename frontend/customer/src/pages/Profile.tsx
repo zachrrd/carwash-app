@@ -1,14 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  Car,
-  LogOut,
-  Mail,
-  Phone,
-  Plus,
-  Trash2,
-  Pencil,
-} from "lucide-react";
+import { Car, LogOut, Mail, Phone, Plus, Trash2, Pencil } from "lucide-react";
 
 import { updateMyProfile } from "@/services/customer.service";
 import { useAuth } from "@/context/AuthContext";
@@ -45,7 +37,7 @@ import {
 } from "@/components/ui/dialog";
 
 export default function Profile() {
-  const { user, updateUser, logout } = useAuth();
+  const { user, updateUser, refreshUser, logout } = useAuth();
   const navigate = useNavigate();
 
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
@@ -92,6 +84,7 @@ export default function Profile() {
         const [vehiclesData, ordersData] = await Promise.all([
           getMyVehicles(),
           getMyOrders(),
+          refreshUser(),
         ]);
 
         if (!cancelled) {
@@ -182,9 +175,7 @@ export default function Profile() {
           }
         ).response;
 
-        setProfileError(
-          response?.data?.message ?? "Gagal memperbarui profil.",
-        );
+        setProfileError(response?.data?.message ?? "Gagal memperbarui profil.");
       } else {
         setProfileError("Gagal memperbarui profil.");
       }
@@ -199,11 +190,7 @@ export default function Profile() {
   const handleSaveVehicle = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (
-      !newPlateNumber.trim() ||
-      !newBrand.trim() ||
-      !newModel.trim()
-    ) {
+    if (!newPlateNumber.trim() || !newBrand.trim() || !newModel.trim()) {
       setVehicleError("Semua kolom data kendaraan wajib diisi.");
       return;
     }
@@ -252,9 +239,7 @@ export default function Profile() {
   // =========================
   const handleDeleteVehicle = async (id: number) => {
     if (
-      !confirm(
-        "Apakah kamu yakin ingin menghapus kendaraan ini dari daftar?",
-      )
+      !confirm("Apakah kamu yakin ingin menghapus kendaraan ini dari daftar?")
     ) {
       return;
     }
@@ -284,8 +269,7 @@ export default function Profile() {
   // =========================
   // STATS
   // =========================
-  const userInitial =
-    user?.name?.charAt(0).toUpperCase() ?? "C";
+  const userInitial = user?.name?.charAt(0).toUpperCase() ?? "C";
 
   const completedOrdersCount = orders.filter(
     (o) => o.service_status === "COMPLETED",
@@ -362,9 +346,7 @@ export default function Profile() {
                   </div>
 
                   <div className="min-w-0">
-                    <p className="text-[10px] text-slate-400">
-                      Email
-                    </p>
+                    <p className="text-[10px] text-slate-400">Email</p>
 
                     <p className="truncate font-semibold text-slate-800">
                       {user?.email || "-"}
@@ -379,9 +361,7 @@ export default function Profile() {
                   </div>
 
                   <div>
-                    <p className="text-[10px] text-slate-400">
-                      Nomor Telepon
-                    </p>
+                    <p className="text-[10px] text-slate-400">Nomor Telepon</p>
 
                     <p className="font-semibold text-slate-800">
                       {user?.customer?.phone || "-"}
@@ -409,7 +389,7 @@ export default function Profile() {
                 className="mt-3 w-full rounded-xl border-red-200 text-xs font-bold text-red-600 hover:bg-red-50 hover:text-red-700"
               >
                 <LogOut className="mr-2 h-4 w-4" />
-                Keluar dari Akun (Logout)
+                Logout
               </Button>
             </CardContent>
           </Card>
@@ -513,8 +493,8 @@ export default function Profile() {
                   </h4>
 
                   <p className="mt-1 text-xs text-slate-500">
-                    Tambahkan mobil kamu sekarang agar memudahkan
-                    saat melakukan booking cuci.
+                    Tambahkan mobil kamu sekarang agar memudahkan saat melakukan
+                    booking cuci.
                   </p>
 
                   <Button
@@ -557,9 +537,7 @@ export default function Profile() {
                         variant="ghost"
                         size="icon"
                         disabled={deletingId === vehicle.id}
-                        onClick={() =>
-                          handleDeleteVehicle(vehicle.id)
-                        }
+                        onClick={() => handleDeleteVehicle(vehicle.id)}
                         className="h-8 w-8 rounded-xl text-slate-400 hover:bg-red-50 hover:text-red-600"
                         title="Hapus Kendaraan"
                       >
@@ -577,10 +555,7 @@ export default function Profile() {
       {/* =========================
           EDIT PROFILE MODAL
       ========================= */}
-      <Dialog
-        open={isEditProfileOpen}
-        onOpenChange={setIsEditProfileOpen}
-      >
+      <Dialog open={isEditProfileOpen} onOpenChange={setIsEditProfileOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <form onSubmit={handleSaveProfile}>
             <DialogHeader>
@@ -680,9 +655,7 @@ export default function Profile() {
                 disabled={savingProfile}
                 className="rounded-xl bg-[#FF5412] text-xs font-bold text-white hover:bg-orange-600"
               >
-                {savingProfile
-                  ? "Menyimpan..."
-                  : "Simpan Perubahan"}
+                {savingProfile ? "Menyimpan..." : "Simpan Perubahan"}
               </Button>
             </DialogFooter>
           </form>
@@ -692,10 +665,7 @@ export default function Profile() {
       {/* =========================
           ADD VEHICLE MODAL
       ========================= */}
-      <Dialog
-        open={isAddVehicleOpen}
-        onOpenChange={setIsAddVehicleOpen}
-      >
+      <Dialog open={isAddVehicleOpen} onOpenChange={setIsAddVehicleOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <form onSubmit={handleSaveVehicle}>
             <DialogHeader>
@@ -704,8 +674,7 @@ export default function Profile() {
               </DialogTitle>
 
               <DialogDescription className="text-xs">
-                Masukkan identitas mobil yang ingin didaftarkan
-                ke akunmu.
+                Masukkan identitas mobil yang ingin didaftarkan ke akunmu.
               </DialogDescription>
             </DialogHeader>
 
@@ -730,9 +699,7 @@ export default function Profile() {
                   placeholder="e.g. B 1234 ABC"
                   value={newPlateNumber}
                   onChange={(e) =>
-                    setNewPlateNumber(
-                      e.target.value.toUpperCase(),
-                    )
+                    setNewPlateNumber(e.target.value.toUpperCase())
                   }
                   disabled={savingVehicle}
                   required
@@ -742,10 +709,7 @@ export default function Profile() {
 
               {/* Brand */}
               <div className="space-y-1.5">
-                <Label
-                  htmlFor="profileBrand"
-                  className="text-xs font-semibold"
-                >
+                <Label htmlFor="profileBrand" className="text-xs font-semibold">
                   Merek / Brand *
                 </Label>
 
@@ -762,10 +726,7 @@ export default function Profile() {
 
               {/* Model */}
               <div className="space-y-1.5">
-                <Label
-                  htmlFor="profileModel"
-                  className="text-xs font-semibold"
-                >
+                <Label htmlFor="profileModel" className="text-xs font-semibold">
                   Model / Tipe Mobil *
                 </Label>
 
@@ -797,9 +758,7 @@ export default function Profile() {
                 disabled={savingVehicle}
                 className="rounded-xl bg-[#FF5412] text-xs font-bold text-white hover:bg-orange-600"
               >
-                {savingVehicle
-                  ? "Menyimpan..."
-                  : "Simpan Kendaraan"}
+                {savingVehicle ? "Menyimpan..." : "Simpan Kendaraan"}
               </Button>
             </DialogFooter>
           </form>

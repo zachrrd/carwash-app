@@ -234,6 +234,21 @@ export default function OrderDetail() {
   const [downloadingInvoice, setDownloadingInvoice] = useState(false);
 
   /* =========================================================
+     BACK NAVIGATION
+  ========================================================= */
+  const handleBack = () => {
+    if (
+      window.history.state &&
+      typeof window.history.state.idx === "number" &&
+      window.history.state.idx > 0
+    ) {
+      navigate(-1);
+    } else {
+      navigate("/orders");
+    }
+  };
+
+  /* =========================================================
      FETCH ORDER
   ========================================================= */
 
@@ -457,11 +472,7 @@ export default function OrderDetail() {
         console.error("Auto verify error:", err);
       } finally {
         if (!cancelled) {
-          window.history.replaceState(
-            {},
-            document.title,
-            `/orders/${parsedOrderId}`,
-          );
+          navigate(`/orders/${parsedOrderId}`, { replace: true });
         }
       }
     };
@@ -776,8 +787,8 @@ export default function OrderDetail() {
         <div>
           <button
             type="button"
-            onClick={() => navigate(-1)}
-            className="mb-2 inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-slate-900"
+            onClick={handleBack}
+            className="mb-2 inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-slate-900 transition-colors cursor-pointer"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
             Kembali
@@ -1183,9 +1194,7 @@ export default function OrderDetail() {
                     >
                       <CreditCard className="mr-2 h-4 w-4" />
 
-                      {paying
-                        ? "Menyiapkan Pembayaran..."
-                        : "Bayar Sekarang (Midtrans)"}
+                      {paying ? "Menyiapkan Pembayaran..." : "Bayar Sekarang"}
                     </Button>
 
                     <div className="rounded-xl bg-orange-50/70 p-3 text-[11px] text-slate-600">
@@ -1194,10 +1203,9 @@ export default function OrderDetail() {
                       </p>
 
                       <p className="mt-0.5 leading-relaxed">
-                        Online via <strong>Midtrans</strong> (QRIS, GoPay,
-                        Virtual Account BCA / Mandiri / BNI / BRI, Kartu
-                        Kredit/Debit) atau bisa bayar tunai di kasir saat
-                        kedatangan.
+                        Online via(QRIS, GoPay, Virtual Account BCA / Mandiri /
+                        BNI / BRI, Kartu Kredit/Debit) atau bisa bayar tunai di
+                        kasir saat kedatangan.
                       </p>
                     </div>
                   </div>

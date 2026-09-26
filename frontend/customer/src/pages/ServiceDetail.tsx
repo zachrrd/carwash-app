@@ -329,49 +329,24 @@ export default function ServiceDetail() {
           </Card>
 
           {/* ACTION */}
-          <div className="flex flex-col gap-3 sm:flex-row">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
             <Button
               type="button"
               disabled={!isAvailable}
               onClick={() =>
                 navigate(`/orders/create?service_id=${service.id}`)
               }
-              className="
-                h-12
-                flex-1
-                rounded-xl
-                bg-[#FF5412]
-                px-6
-                font-bold
-                text-white
-                shadow-lg
-                shadow-orange-500/20
-                hover:bg-[#E33D00]
-                disabled:cursor-not-allowed
-                disabled:opacity-50
-              "
+              className="h-12 min-h-[48px] w-full flex-1 rounded-xl bg-[#FF5412] px-6 text-sm font-bold text-white shadow-lg shadow-orange-500/20 hover:bg-[#E33D00] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
             >
               Booking Sekarang
-              <ArrowRight className="ml-2 h-4 w-4" />
+              <ArrowRight className="ml-2 h-4 w-4 shrink-0" />
             </Button>
 
             <Button
               type="button"
               variant="outline"
               onClick={() => navigate("/services")}
-              className="
-                h-12
-                w-full
-                rounded-xl
-                border-slate-200
-                px-6
-                font-semibold
-                text-slate-700
-                hover:border-orange-200
-                hover:bg-orange-50
-                hover:text-[#FF5412]
-                sm:w-auto
-              "
+              className="h-12 min-h-[48px] w-full rounded-xl border-slate-200 px-6 text-sm font-semibold text-slate-700 hover:border-orange-200 hover:bg-orange-50 hover:text-[#FF5412] sm:w-auto"
             >
               Layanan Lainnya
             </Button>

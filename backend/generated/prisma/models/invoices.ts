@@ -324,6 +324,16 @@ export type invoicesUncheckedUpdateManyInput = {
   issued_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
+export type InvoicesListRelationFilter = {
+  every?: Prisma.invoicesWhereInput
+  some?: Prisma.invoicesWhereInput
+  none?: Prisma.invoicesWhereInput
+}
+
+export type invoicesOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
+}
+
 export type invoicesCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   invoice_no?: Prisma.SortOrder
@@ -358,28 +368,6 @@ export type invoicesSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
   order_id?: Prisma.SortOrder
   total_amount?: Prisma.SortOrder
-}
-
-export type InvoicesListRelationFilter = {
-  every?: Prisma.invoicesWhereInput
-  some?: Prisma.invoicesWhereInput
-  none?: Prisma.invoicesWhereInput
-}
-
-export type invoicesOrderByRelationAggregateInput = {
-  _count?: Prisma.SortOrder
-}
-
-export type DecimalFieldUpdateOperationsInput = {
-  set?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  increment?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  decrement?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  multiply?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  divide?: runtime.Decimal | runtime.DecimalJsLike | number | string
-}
-
-export type NullableDateTimeFieldUpdateOperationsInput = {
-  set?: Date | string | null
 }
 
 export type invoicesCreateNestedManyWithoutOrdersInput = {

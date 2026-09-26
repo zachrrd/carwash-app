@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import WelcomeHero from "@/components/customer/dashboard/WelcomeHero";
 import ServicePreview from "@/components/customer/dashboard/ServicePreview";
-import ActiveOrder from "@/components/customer/dashboard/Activeorder";
+import ActiveOrder from "@/components/customer/dashboard/ActiveOrder";
 import RecentOrders from "@/components/customer/dashboard/RecentOrders";
 import DashboardFooter from "@/components/customer/DashboardFooter";
 

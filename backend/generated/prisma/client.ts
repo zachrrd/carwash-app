@@ -52,37 +52,37 @@ export type users = Prisma.usersModel
  */
 export type customers = Prisma.customersModel
 /**
- * Model invoices
+ * Model staffs
  * 
  */
-export type invoices = Prisma.invoicesModel
-/**
- * Model order_items
- * 
- */
-export type order_items = Prisma.order_itemsModel
-/**
- * Model orders
- * 
- */
-export type orders = Prisma.ordersModel
-/**
- * Model payments
- * 
- */
-export type payments = Prisma.paymentsModel
-/**
- * Model services
- * 
- */
-export type services = Prisma.servicesModel
+export type staffs = Prisma.staffsModel
 /**
  * Model vehicles
  * 
  */
 export type vehicles = Prisma.vehiclesModel
 /**
- * Model staffs
+ * Model services
  * 
  */
-export type staffs = Prisma.staffsModel
+export type services = Prisma.servicesModel
+/**
+ * Model orders
+ * 
+ */
+export type orders = Prisma.ordersModel
+/**
+ * Model order_items
+ * 
+ */
+export type order_items = Prisma.order_itemsModel
+/**
+ * Model payments
+ * 
+ */
+export type payments = Prisma.paymentsModel
+/**
+ * Model invoices
+ * 
+ */
+export type invoices = Prisma.invoicesModel

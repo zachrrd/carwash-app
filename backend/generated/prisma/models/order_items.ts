@@ -334,6 +334,16 @@ export type order_itemsUncheckedUpdateManyInput = {
   subtotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
 }
 
+export type Order_itemsListRelationFilter = {
+  every?: Prisma.order_itemsWhereInput
+  some?: Prisma.order_itemsWhereInput
+  none?: Prisma.order_itemsWhereInput
+}
+
+export type order_itemsOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
+}
+
 export type order_itemsCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   order_id?: Prisma.SortOrder
@@ -372,66 +382,6 @@ export type order_itemsSumOrderByAggregateInput = {
   service_id?: Prisma.SortOrder
   qty?: Prisma.SortOrder
   subtotal?: Prisma.SortOrder
-}
-
-export type Order_itemsListRelationFilter = {
-  every?: Prisma.order_itemsWhereInput
-  some?: Prisma.order_itemsWhereInput
-  none?: Prisma.order_itemsWhereInput
-}
-
-export type order_itemsOrderByRelationAggregateInput = {
-  _count?: Prisma.SortOrder
-}
-
-export type NullableIntFieldUpdateOperationsInput = {
-  set?: number | null
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
-export type order_itemsCreateNestedManyWithoutOrdersInput = {
-  create?: Prisma.XOR<Prisma.order_itemsCreateWithoutOrdersInput, Prisma.order_itemsUncheckedCreateWithoutOrdersInput> | Prisma.order_itemsCreateWithoutOrdersInput[] | Prisma.order_itemsUncheckedCreateWithoutOrdersInput[]
-  connectOrCreate?: Prisma.order_itemsCreateOrConnectWithoutOrdersInput | Prisma.order_itemsCreateOrConnectWithoutOrdersInput[]
-  createMany?: Prisma.order_itemsCreateManyOrdersInputEnvelope
-  connect?: Prisma.order_itemsWhereUniqueInput | Prisma.order_itemsWhereUniqueInput[]
-}
-
-export type order_itemsUncheckedCreateNestedManyWithoutOrdersInput = {
-  create?: Prisma.XOR<Prisma.order_itemsCreateWithoutOrdersInput, Prisma.order_itemsUncheckedCreateWithoutOrdersInput> | Prisma.order_itemsCreateWithoutOrdersInput[] | Prisma.order_itemsUncheckedCreateWithoutOrdersInput[]
-  connectOrCreate?: Prisma.order_itemsCreateOrConnectWithoutOrdersInput | Prisma.order_itemsCreateOrConnectWithoutOrdersInput[]
-  createMany?: Prisma.order_itemsCreateManyOrdersInputEnvelope
-  connect?: Prisma.order_itemsWhereUniqueInput | Prisma.order_itemsWhereUniqueInput[]
-}
-
-export type order_itemsUpdateManyWithoutOrdersNestedInput = {
-  create?: Prisma.XOR<Prisma.order_itemsCreateWithoutOrdersInput, Prisma.order_itemsUncheckedCreateWithoutOrdersInput> | Prisma.order_itemsCreateWithoutOrdersInput[] | Prisma.order_itemsUncheckedCreateWithoutOrdersInput[]
-  connectOrCreate?: Prisma.order_itemsCreateOrConnectWithoutOrdersInput | Prisma.order_itemsCreateOrConnectWithoutOrdersInput[]
-  upsert?: Prisma.order_itemsUpsertWithWhereUniqueWithoutOrdersInput | Prisma.order_itemsUpsertWithWhereUniqueWithoutOrdersInput[]
-  createMany?: Prisma.order_itemsCreateManyOrdersInputEnvelope
-  set?: Prisma.order_itemsWhereUniqueInput | Prisma.order_itemsWhereUniqueInput[]
-  disconnect?: Prisma.order_itemsWhereUniqueInput | Prisma.order_itemsWhereUniqueInput[]
-  delete?: Prisma.order_itemsWhereUniqueInput | Prisma.order_itemsWhereUniqueInput[]
-  connect?: Prisma.order_itemsWhereUniqueInput | Prisma.order_itemsWhereUniqueInput[]
-  update?: Prisma.order_itemsUpdateWithWhereUniqueWithoutOrdersInput | Prisma.order_itemsUpdateWithWhereUniqueWithoutOrdersInput[]
-  updateMany?: Prisma.order_itemsUpdateManyWithWhereWithoutOrdersInput | Prisma.order_itemsUpdateManyWithWhereWithoutOrdersInput[]
-  deleteMany?: Prisma.order_itemsScalarWhereInput | Prisma.order_itemsScalarWhereInput[]
-}
-
-export type order_itemsUncheckedUpdateManyWithoutOrdersNestedInput = {
-  create?: Prisma.XOR<Prisma.order_itemsCreateWithoutOrdersInput, Prisma.order_itemsUncheckedCreateWithoutOrdersInput> | Prisma.order_itemsCreateWithoutOrdersInput[] | Prisma.order_itemsUncheckedCreateWithoutOrdersInput[]
-  connectOrCreate?: Prisma.order_itemsCreateOrConnectWithoutOrdersInput | Prisma.order_itemsCreateOrConnectWithoutOrdersInput[]
-  upsert?: Prisma.order_itemsUpsertWithWhereUniqueWithoutOrdersInput | Prisma.order_itemsUpsertWithWhereUniqueWithoutOrdersInput[]
-  createMany?: Prisma.order_itemsCreateManyOrdersInputEnvelope
-  set?: Prisma.order_itemsWhereUniqueInput | Prisma.order_itemsWhereUniqueInput[]
-  disconnect?: Prisma.order_itemsWhereUniqueInput | Prisma.order_itemsWhereUniqueInput[]
-  delete?: Prisma.order_itemsWhereUniqueInput | Prisma.order_itemsWhereUniqueInput[]
-  connect?: Prisma.order_itemsWhereUniqueInput | Prisma.order_itemsWhereUniqueInput[]
-  update?: Prisma.order_itemsUpdateWithWhereUniqueWithoutOrdersInput | Prisma.order_itemsUpdateWithWhereUniqueWithoutOrdersInput[]
-  updateMany?: Prisma.order_itemsUpdateManyWithWhereWithoutOrdersInput | Prisma.order_itemsUpdateManyWithWhereWithoutOrdersInput[]
-  deleteMany?: Prisma.order_itemsScalarWhereInput | Prisma.order_itemsScalarWhereInput[]
 }
 
 export type order_itemsCreateNestedManyWithoutServicesInput = {
@@ -476,54 +426,46 @@ export type order_itemsUncheckedUpdateManyWithoutServicesNestedInput = {
   deleteMany?: Prisma.order_itemsScalarWhereInput | Prisma.order_itemsScalarWhereInput[]
 }
 
-export type order_itemsCreateWithoutOrdersInput = {
-  qty?: number | null
-  subtotal: runtime.Decimal | runtime.DecimalJsLike | number | string
-  services: Prisma.servicesCreateNestedOneWithoutOrder_itemsInput
+export type order_itemsCreateNestedManyWithoutOrdersInput = {
+  create?: Prisma.XOR<Prisma.order_itemsCreateWithoutOrdersInput, Prisma.order_itemsUncheckedCreateWithoutOrdersInput> | Prisma.order_itemsCreateWithoutOrdersInput[] | Prisma.order_itemsUncheckedCreateWithoutOrdersInput[]
+  connectOrCreate?: Prisma.order_itemsCreateOrConnectWithoutOrdersInput | Prisma.order_itemsCreateOrConnectWithoutOrdersInput[]
+  createMany?: Prisma.order_itemsCreateManyOrdersInputEnvelope
+  connect?: Prisma.order_itemsWhereUniqueInput | Prisma.order_itemsWhereUniqueInput[]
 }
 
-export type order_itemsUncheckedCreateWithoutOrdersInput = {
-  id?: number
-  service_id: number
-  qty?: number | null
-  subtotal: runtime.Decimal | runtime.DecimalJsLike | number | string
+export type order_itemsUncheckedCreateNestedManyWithoutOrdersInput = {
+  create?: Prisma.XOR<Prisma.order_itemsCreateWithoutOrdersInput, Prisma.order_itemsUncheckedCreateWithoutOrdersInput> | Prisma.order_itemsCreateWithoutOrdersInput[] | Prisma.order_itemsUncheckedCreateWithoutOrdersInput[]
+  connectOrCreate?: Prisma.order_itemsCreateOrConnectWithoutOrdersInput | Prisma.order_itemsCreateOrConnectWithoutOrdersInput[]
+  createMany?: Prisma.order_itemsCreateManyOrdersInputEnvelope
+  connect?: Prisma.order_itemsWhereUniqueInput | Prisma.order_itemsWhereUniqueInput[]
 }
 
-export type order_itemsCreateOrConnectWithoutOrdersInput = {
-  where: Prisma.order_itemsWhereUniqueInput
-  create: Prisma.XOR<Prisma.order_itemsCreateWithoutOrdersInput, Prisma.order_itemsUncheckedCreateWithoutOrdersInput>
+export type order_itemsUpdateManyWithoutOrdersNestedInput = {
+  create?: Prisma.XOR<Prisma.order_itemsCreateWithoutOrdersInput, Prisma.order_itemsUncheckedCreateWithoutOrdersInput> | Prisma.order_itemsCreateWithoutOrdersInput[] | Prisma.order_itemsUncheckedCreateWithoutOrdersInput[]
+  connectOrCreate?: Prisma.order_itemsCreateOrConnectWithoutOrdersInput | Prisma.order_itemsCreateOrConnectWithoutOrdersInput[]
+  upsert?: Prisma.order_itemsUpsertWithWhereUniqueWithoutOrdersInput | Prisma.order_itemsUpsertWithWhereUniqueWithoutOrdersInput[]
+  createMany?: Prisma.order_itemsCreateManyOrdersInputEnvelope
+  set?: Prisma.order_itemsWhereUniqueInput | Prisma.order_itemsWhereUniqueInput[]
+  disconnect?: Prisma.order_itemsWhereUniqueInput | Prisma.order_itemsWhereUniqueInput[]
+  delete?: Prisma.order_itemsWhereUniqueInput | Prisma.order_itemsWhereUniqueInput[]
+  connect?: Prisma.order_itemsWhereUniqueInput | Prisma.order_itemsWhereUniqueInput[]
+  update?: Prisma.order_itemsUpdateWithWhereUniqueWithoutOrdersInput | Prisma.order_itemsUpdateWithWhereUniqueWithoutOrdersInput[]
+  updateMany?: Prisma.order_itemsUpdateManyWithWhereWithoutOrdersInput | Prisma.order_itemsUpdateManyWithWhereWithoutOrdersInput[]
+  deleteMany?: Prisma.order_itemsScalarWhereInput | Prisma.order_itemsScalarWhereInput[]
 }
 
-export type order_itemsCreateManyOrdersInputEnvelope = {
-  data: Prisma.order_itemsCreateManyOrdersInput | Prisma.order_itemsCreateManyOrdersInput[]
-  skipDuplicates?: boolean
-}
-
-export type order_itemsUpsertWithWhereUniqueWithoutOrdersInput = {
-  where: Prisma.order_itemsWhereUniqueInput
-  update: Prisma.XOR<Prisma.order_itemsUpdateWithoutOrdersInput, Prisma.order_itemsUncheckedUpdateWithoutOrdersInput>
-  create: Prisma.XOR<Prisma.order_itemsCreateWithoutOrdersInput, Prisma.order_itemsUncheckedCreateWithoutOrdersInput>
-}
-
-export type order_itemsUpdateWithWhereUniqueWithoutOrdersInput = {
-  where: Prisma.order_itemsWhereUniqueInput
-  data: Prisma.XOR<Prisma.order_itemsUpdateWithoutOrdersInput, Prisma.order_itemsUncheckedUpdateWithoutOrdersInput>
-}
-
-export type order_itemsUpdateManyWithWhereWithoutOrdersInput = {
-  where: Prisma.order_itemsScalarWhereInput
-  data: Prisma.XOR<Prisma.order_itemsUpdateManyMutationInput, Prisma.order_itemsUncheckedUpdateManyWithoutOrdersInput>
-}
-
-export type order_itemsScalarWhereInput = {
-  AND?: Prisma.order_itemsScalarWhereInput | Prisma.order_itemsScalarWhereInput[]
-  OR?: Prisma.order_itemsScalarWhereInput[]
-  NOT?: Prisma.order_itemsScalarWhereInput | Prisma.order_itemsScalarWhereInput[]
-  id?: Prisma.IntFilter<"order_items"> | number
-  order_id?: Prisma.IntFilter<"order_items"> | number
-  service_id?: Prisma.IntFilter<"order_items"> | number
-  qty?: Prisma.IntNullableFilter<"order_items"> | number | null
-  subtotal?: Prisma.DecimalFilter<"order_items"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+export type order_itemsUncheckedUpdateManyWithoutOrdersNestedInput = {
+  create?: Prisma.XOR<Prisma.order_itemsCreateWithoutOrdersInput, Prisma.order_itemsUncheckedCreateWithoutOrdersInput> | Prisma.order_itemsCreateWithoutOrdersInput[] | Prisma.order_itemsUncheckedCreateWithoutOrdersInput[]
+  connectOrCreate?: Prisma.order_itemsCreateOrConnectWithoutOrdersInput | Prisma.order_itemsCreateOrConnectWithoutOrdersInput[]
+  upsert?: Prisma.order_itemsUpsertWithWhereUniqueWithoutOrdersInput | Prisma.order_itemsUpsertWithWhereUniqueWithoutOrdersInput[]
+  createMany?: Prisma.order_itemsCreateManyOrdersInputEnvelope
+  set?: Prisma.order_itemsWhereUniqueInput | Prisma.order_itemsWhereUniqueInput[]
+  disconnect?: Prisma.order_itemsWhereUniqueInput | Prisma.order_itemsWhereUniqueInput[]
+  delete?: Prisma.order_itemsWhereUniqueInput | Prisma.order_itemsWhereUniqueInput[]
+  connect?: Prisma.order_itemsWhereUniqueInput | Prisma.order_itemsWhereUniqueInput[]
+  update?: Prisma.order_itemsUpdateWithWhereUniqueWithoutOrdersInput | Prisma.order_itemsUpdateWithWhereUniqueWithoutOrdersInput[]
+  updateMany?: Prisma.order_itemsUpdateManyWithWhereWithoutOrdersInput | Prisma.order_itemsUpdateManyWithWhereWithoutOrdersInput[]
+  deleteMany?: Prisma.order_itemsScalarWhereInput | Prisma.order_itemsScalarWhereInput[]
 }
 
 export type order_itemsCreateWithoutServicesInput = {
@@ -565,31 +507,54 @@ export type order_itemsUpdateManyWithWhereWithoutServicesInput = {
   data: Prisma.XOR<Prisma.order_itemsUpdateManyMutationInput, Prisma.order_itemsUncheckedUpdateManyWithoutServicesInput>
 }
 
-export type order_itemsCreateManyOrdersInput = {
+export type order_itemsScalarWhereInput = {
+  AND?: Prisma.order_itemsScalarWhereInput | Prisma.order_itemsScalarWhereInput[]
+  OR?: Prisma.order_itemsScalarWhereInput[]
+  NOT?: Prisma.order_itemsScalarWhereInput | Prisma.order_itemsScalarWhereInput[]
+  id?: Prisma.IntFilter<"order_items"> | number
+  order_id?: Prisma.IntFilter<"order_items"> | number
+  service_id?: Prisma.IntFilter<"order_items"> | number
+  qty?: Prisma.IntNullableFilter<"order_items"> | number | null
+  subtotal?: Prisma.DecimalFilter<"order_items"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+}
+
+export type order_itemsCreateWithoutOrdersInput = {
+  qty?: number | null
+  subtotal: runtime.Decimal | runtime.DecimalJsLike | number | string
+  services: Prisma.servicesCreateNestedOneWithoutOrder_itemsInput
+}
+
+export type order_itemsUncheckedCreateWithoutOrdersInput = {
   id?: number
   service_id: number
   qty?: number | null
   subtotal: runtime.Decimal | runtime.DecimalJsLike | number | string
 }
 
-export type order_itemsUpdateWithoutOrdersInput = {
-  qty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  subtotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  services?: Prisma.servicesUpdateOneRequiredWithoutOrder_itemsNestedInput
+export type order_itemsCreateOrConnectWithoutOrdersInput = {
+  where: Prisma.order_itemsWhereUniqueInput
+  create: Prisma.XOR<Prisma.order_itemsCreateWithoutOrdersInput, Prisma.order_itemsUncheckedCreateWithoutOrdersInput>
 }
 
-export type order_itemsUncheckedUpdateWithoutOrdersInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  service_id?: Prisma.IntFieldUpdateOperationsInput | number
-  qty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  subtotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+export type order_itemsCreateManyOrdersInputEnvelope = {
+  data: Prisma.order_itemsCreateManyOrdersInput | Prisma.order_itemsCreateManyOrdersInput[]
+  skipDuplicates?: boolean
 }
 
-export type order_itemsUncheckedUpdateManyWithoutOrdersInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  service_id?: Prisma.IntFieldUpdateOperationsInput | number
-  qty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  subtotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+export type order_itemsUpsertWithWhereUniqueWithoutOrdersInput = {
+  where: Prisma.order_itemsWhereUniqueInput
+  update: Prisma.XOR<Prisma.order_itemsUpdateWithoutOrdersInput, Prisma.order_itemsUncheckedUpdateWithoutOrdersInput>
+  create: Prisma.XOR<Prisma.order_itemsCreateWithoutOrdersInput, Prisma.order_itemsUncheckedCreateWithoutOrdersInput>
+}
+
+export type order_itemsUpdateWithWhereUniqueWithoutOrdersInput = {
+  where: Prisma.order_itemsWhereUniqueInput
+  data: Prisma.XOR<Prisma.order_itemsUpdateWithoutOrdersInput, Prisma.order_itemsUncheckedUpdateWithoutOrdersInput>
+}
+
+export type order_itemsUpdateManyWithWhereWithoutOrdersInput = {
+  where: Prisma.order_itemsScalarWhereInput
+  data: Prisma.XOR<Prisma.order_itemsUpdateManyMutationInput, Prisma.order_itemsUncheckedUpdateManyWithoutOrdersInput>
 }
 
 export type order_itemsCreateManyServicesInput = {
@@ -615,6 +580,33 @@ export type order_itemsUncheckedUpdateWithoutServicesInput = {
 export type order_itemsUncheckedUpdateManyWithoutServicesInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   order_id?: Prisma.IntFieldUpdateOperationsInput | number
+  qty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  subtotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+}
+
+export type order_itemsCreateManyOrdersInput = {
+  id?: number
+  service_id: number
+  qty?: number | null
+  subtotal: runtime.Decimal | runtime.DecimalJsLike | number | string
+}
+
+export type order_itemsUpdateWithoutOrdersInput = {
+  qty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  subtotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  services?: Prisma.servicesUpdateOneRequiredWithoutOrder_itemsNestedInput
+}
+
+export type order_itemsUncheckedUpdateWithoutOrdersInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  service_id?: Prisma.IntFieldUpdateOperationsInput | number
+  qty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  subtotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+}
+
+export type order_itemsUncheckedUpdateManyWithoutOrdersInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  service_id?: Prisma.IntFieldUpdateOperationsInput | number
   qty?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   subtotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
 }

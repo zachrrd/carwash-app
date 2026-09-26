@@ -53,13 +53,13 @@ export const AnyNull = runtime.AnyNull
 export const ModelName = {
   users: 'users',
   customers: 'customers',
-  invoices: 'invoices',
-  order_items: 'order_items',
-  orders: 'orders',
-  payments: 'payments',
-  services: 'services',
+  staffs: 'staffs',
   vehicles: 'vehicles',
-  staffs: 'staffs'
+  services: 'services',
+  orders: 'orders',
+  order_items: 'order_items',
+  payments: 'payments',
+  invoices: 'invoices'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -92,22 +92,73 @@ export type UsersScalarFieldEnum = (typeof UsersScalarFieldEnum)[keyof typeof Us
 
 export const CustomersScalarFieldEnum = {
   id: 'id',
+  user_id: 'user_id',
   name: 'name',
-  phone: 'phone'
+  phone: 'phone',
+  created_at: 'created_at',
+  updated_at: 'updated_at',
+  deleted_at: 'deleted_at'
 } as const
 
 export type CustomersScalarFieldEnum = (typeof CustomersScalarFieldEnum)[keyof typeof CustomersScalarFieldEnum]
 
 
-export const InvoicesScalarFieldEnum = {
+export const StaffsScalarFieldEnum = {
   id: 'id',
-  invoice_no: 'invoice_no',
-  order_id: 'order_id',
-  total_amount: 'total_amount',
-  issued_at: 'issued_at'
+  name: 'name',
+  phone: 'phone',
+  status: 'status',
+  created_at: 'created_at',
+  updated_at: 'updated_at',
+  deleted_at: 'deleted_at'
 } as const
 
-export type InvoicesScalarFieldEnum = (typeof InvoicesScalarFieldEnum)[keyof typeof InvoicesScalarFieldEnum]
+export type StaffsScalarFieldEnum = (typeof StaffsScalarFieldEnum)[keyof typeof StaffsScalarFieldEnum]
+
+
+export const VehiclesScalarFieldEnum = {
+  id: 'id',
+  plate_number: 'plate_number',
+  brand: 'brand',
+  model: 'model',
+  customer_id: 'customer_id',
+  created_at: 'created_at',
+  updated_at: 'updated_at',
+  deleted_at: 'deleted_at'
+} as const
+
+export type VehiclesScalarFieldEnum = (typeof VehiclesScalarFieldEnum)[keyof typeof VehiclesScalarFieldEnum]
+
+
+export const ServicesScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  duration: 'duration',
+  price: 'price',
+  status: 'status',
+  image_url: 'image_url',
+  image_id: 'image_id',
+  created_at: 'created_at',
+  updated_at: 'updated_at',
+  deleted_at: 'deleted_at'
+} as const
+
+export type ServicesScalarFieldEnum = (typeof ServicesScalarFieldEnum)[keyof typeof ServicesScalarFieldEnum]
+
+
+export const OrdersScalarFieldEnum = {
+  id: 'id',
+  order_date: 'order_date',
+  created_at: 'created_at',
+  service_status: 'service_status',
+  payment_status: 'payment_status',
+  customer_id: 'customer_id',
+  vehicle_id: 'vehicle_id',
+  staff_id: 'staff_id',
+  check_in_time: 'check_in_time'
+} as const
+
+export type OrdersScalarFieldEnum = (typeof OrdersScalarFieldEnum)[keyof typeof OrdersScalarFieldEnum]
 
 
 export const Order_itemsScalarFieldEnum = {
@@ -119,20 +170,6 @@ export const Order_itemsScalarFieldEnum = {
 } as const
 
 export type Order_itemsScalarFieldEnum = (typeof Order_itemsScalarFieldEnum)[keyof typeof Order_itemsScalarFieldEnum]
-
-
-export const OrdersScalarFieldEnum = {
-  id: 'id',
-  order_date: 'order_date',
-  service_status: 'service_status',
-  payment_status: 'payment_status',
-  customer_id: 'customer_id',
-  vehicle_id: 'vehicle_id',
-  staff_id: 'staff_id',
-  check_in_time: 'check_in_time'
-} as const
-
-export type OrdersScalarFieldEnum = (typeof OrdersScalarFieldEnum)[keyof typeof OrdersScalarFieldEnum]
 
 
 export const PaymentsScalarFieldEnum = {
@@ -147,36 +184,15 @@ export const PaymentsScalarFieldEnum = {
 export type PaymentsScalarFieldEnum = (typeof PaymentsScalarFieldEnum)[keyof typeof PaymentsScalarFieldEnum]
 
 
-export const ServicesScalarFieldEnum = {
+export const InvoicesScalarFieldEnum = {
   id: 'id',
-  name: 'name',
-  duration: 'duration',
-  price: 'price',
-  status: 'status'
+  invoice_no: 'invoice_no',
+  order_id: 'order_id',
+  total_amount: 'total_amount',
+  issued_at: 'issued_at'
 } as const
 
-export type ServicesScalarFieldEnum = (typeof ServicesScalarFieldEnum)[keyof typeof ServicesScalarFieldEnum]
-
-
-export const VehiclesScalarFieldEnum = {
-  id: 'id',
-  plate_number: 'plate_number',
-  brand: 'brand',
-  model: 'model',
-  customer_id: 'customer_id'
-} as const
-
-export type VehiclesScalarFieldEnum = (typeof VehiclesScalarFieldEnum)[keyof typeof VehiclesScalarFieldEnum]
-
-
-export const StaffsScalarFieldEnum = {
-  id: 'id',
-  name: 'name',
-  phone: 'phone',
-  status: 'status'
-} as const
-
-export type StaffsScalarFieldEnum = (typeof StaffsScalarFieldEnum)[keyof typeof StaffsScalarFieldEnum]
+export type InvoicesScalarFieldEnum = (typeof InvoicesScalarFieldEnum)[keyof typeof InvoicesScalarFieldEnum]
 
 
 export const SortOrder = {
