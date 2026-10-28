@@ -13,7 +13,7 @@ import { getService } from "@/services/service.service";
 import { getStaffs } from "@/services/staff.service";
 import { createPayment } from "@/services/payment.service";
 
-import type { Order, OrderStatus } from "@/types/order";
+import type { Order, OrderStatus, UpdateOrder } from "@/types/order";
 import type { Customer } from "@/types/customer";
 import type { Vehicle } from "@/types/vehicle";
 import type { Service } from "@/types/service";
@@ -94,12 +94,29 @@ const getStatusLabel = (status: string | null | undefined) => {
 const getOrderTotal = (order: Order) => {
   return (
     order.order_items?.reduce((total, item) => {
-      const price = Number(item.services?.price ?? 0);
-      const qty = item.qty ?? 1;
-
-      return total + price * qty;
+      return total + Number(item.subtotal ?? 0);
     }, 0) ?? 0
   );
+};
+
+const getErrorMessage = (error: unknown, fallback: string): string => {
+  if (typeof error === "object" && error !== null && "response" in error) {
+    const response = error.response;
+
+    if (typeof response === "object" && response !== null && "data" in response) {
+      const data = response.data;
+
+      if (typeof data === "object" && data !== null && "message" in data) {
+        const message = data.message;
+
+        if (typeof message === "string") {
+          return message;
+        }
+      }
+    }
+  }
+
+  return fallback;
 };
 
 export default function Orders() {
@@ -149,6 +166,7 @@ export default function Orders() {
   const [editOrder, setEditOrder] = useState<Order | null>(null);
   const [editOpen, setEditOpen] = useState(false);
   const [editItems, setEditItems] = useState<OrderItemForm[]>([]);
+  const [editItemsChanged, setEditItemsChanged] = useState(false);
   const [editServiceId, setEditServiceId] = useState("");
   const [editServiceSearch, setEditServiceSearch] = useState("");
   const [editServiceDropdownOpen, setEditServiceDropdownOpen] = useState(false);
@@ -176,9 +194,9 @@ export default function Orders() {
       const response = await getOrders(pageNumber, 10);
       const data = response.data.data;
 
-      setOrders(data.orders || (data as any).data || []);
+      setOrders(data.orders || data.data || []);
       setTotalPages(data.pagination?.totalPages || 1);
-    } catch (err) {
+    } catch (err: unknown) {
       console.error("Failed to fetch orders:", err);
       setError("Failed to fetch orders.");
     } finally {
@@ -186,33 +204,73 @@ export default function Orders() {
     }
   };
 
-  const fetchMasterData = async () => {
-    try {
-      const [customerRes, vehicleRes, serviceRes, staffRes] = await Promise.all(
-        [
-          getCustomers(1, 100),
-          getVehicles(1, 100),
-          getService(1, 100),
-          getStaffs(1, 100),
-        ],
-      );
-
-      setCustomers(customerRes.data.data.customers || []);
-      setVehicles(vehicleRes.data.data.vehicles || []);
-      setServices(serviceRes.data.data.services || []);
-      setStaffs(staffRes.data.data.staffs || []);
-    } catch (err) {
-      console.error("Failed to fetch master data:", err);
-      setError("Failed to fetch master data.");
-    }
-  };
-
   useEffect(() => {
-    void fetchOrders(page);
+    let ignore = false;
+
+    const loadOrders = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const response = await getOrders(page, 10);
+        const data = response.data.data;
+
+        if (!ignore) {
+          setOrders(data.orders || data.data || []);
+          setTotalPages(data.pagination?.totalPages || 1);
+        }
+      } catch (err: unknown) {
+        if (!ignore) {
+          console.error("Failed to fetch orders:", err);
+          setError("Failed to fetch orders.");
+        }
+      } finally {
+        if (!ignore) {
+          setLoading(false);
+        }
+      }
+    };
+
+    void loadOrders();
+
+    return () => {
+      ignore = true;
+    };
   }, [page]);
 
   useEffect(() => {
+    let ignore = false;
+
+    const fetchMasterData = async () => {
+      try {
+        const [customerRes, vehicleRes, serviceRes, staffRes] = await Promise.all(
+          [
+            getCustomers(1, 100),
+            getVehicles(1, 100),
+            getService(1, 100),
+            getStaffs(1, 100),
+          ],
+        );
+
+        if (!ignore) {
+          setCustomers(customerRes.data.data.customers || []);
+          setVehicles(vehicleRes.data.data.vehicles || []);
+          setServices(serviceRes.data.data.services || []);
+          setStaffs(staffRes.data.data.staffs || []);
+        }
+      } catch (err: unknown) {
+        if (!ignore) {
+          console.error("Failed to fetch master data:", err);
+          setError("Failed to fetch master data.");
+        }
+      }
+    };
+
     void fetchMasterData();
+
+    return () => {
+      ignore = true;
+    };
   }, []);
 
   const availableVehicles = useMemo(() => {
@@ -231,7 +289,7 @@ export default function Orders() {
     return customers.filter((customer) => {
       const name = customer.name?.toLowerCase() ?? "";
       const phone = customer.phone?.toLowerCase() ?? "";
-      const email = customer.email?.toLowerCase() ?? "";
+      const email = customer.user?.email?.toLowerCase() ?? "";
 
       return (
         name.includes(keyword) ||
@@ -492,10 +550,10 @@ export default function Orders() {
       setOpen(false);
 
       toast.success("Order created successfully.");
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("CREATE ORDER ERROR:", err);
 
-      toast.error(err.response?.data?.message || "Failed to create order.");
+      toast.error(getErrorMessage(err, "Failed to create order."));
     } finally {
       setSubmitting(false);
     }
@@ -542,22 +600,9 @@ export default function Orders() {
     setAssignStaffSubmitting(true);
 
     try {
-      const payload: any =
-        assignStaffOrder.payment_status === "PAID"
-          ? {
-              staff_id: Number(selectedAssignStaffId),
-            }
-          : {
-              customer_id: assignStaffOrder.customer_id,
-              vehicle_id: assignStaffOrder.vehicle_id,
-              staff_id: Number(selectedAssignStaffId),
-              check_in_time: assignStaffOrder.check_in_time ?? null,
-              items:
-                assignStaffOrder.order_items?.map((item) => ({
-                  service_id: item.service_id,
-                  qty: 1,
-                })) ?? [],
-            };
+      const payload: UpdateOrder = {
+        staff_id: Number(selectedAssignStaffId),
+      };
 
       const res = await updateOrder(assignStaffOrder.id, payload);
 
@@ -577,10 +622,10 @@ export default function Orders() {
       setAssignStaffDropdownOpen(false);
 
       toast.success("Staff assigned successfully.");
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("ASSIGN STAFF ERROR:", err);
 
-      toast.error(err.response?.data?.message || "Failed to assign staff.");
+      toast.error(getErrorMessage(err, "Failed to assign staff."));
     } finally {
       setAssignStaffSubmitting(false);
     }
@@ -654,11 +699,11 @@ export default function Orders() {
       }
 
       toast.success(`Order status updated to ${getStatusLabel(nextStatus)}.`);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("STATUS UPDATE ERROR:", err);
 
       toast.error(
-        err.response?.data?.message || "Failed to update order status.",
+        getErrorMessage(err, "Failed to update order status."),
       );
     } finally {
       setStatusSubmitting(null);
@@ -716,10 +761,10 @@ export default function Orders() {
       setPaymentOrder(null);
 
       toast.success("Payment recorded successfully.");
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("PAYMENT ERROR:", err);
 
-      toast.error(err.response?.data?.message || "Failed to process payment.");
+      toast.error(getErrorMessage(err, "Failed to complete payment."));
     } finally {
       setPaymentSubmitting(false);
     }
@@ -750,6 +795,7 @@ export default function Orders() {
         qty: 1,
       })) ?? [],
     );
+    setEditItemsChanged(false);
 
     setEditServiceId("");
     setEditServiceSearch("");
@@ -795,6 +841,7 @@ export default function Orders() {
         qty: 1,
       },
     ]);
+    setEditItemsChanged(true);
 
     setEditServiceId("");
     setEditServiceSearch("");
@@ -802,6 +849,9 @@ export default function Orders() {
   };
 
   const handleRemoveEditService = (sId: number) => {
+    if (editItems.some((item) => item.service_id === sId)) {
+      setEditItemsChanged(true);
+    }
     setEditItems((prev) => prev.filter((item) => item.service_id !== sId));
   };
 
@@ -819,15 +869,17 @@ export default function Orders() {
     setSubmitting(true);
 
     try {
-      const payload = {
+      const payload: UpdateOrder = {
         customer_id: editOrder.customer_id,
         vehicle_id: editOrder.vehicle_id,
         staff_id: editOrder.staff_id,
         check_in_time: editOrder.check_in_time ?? null,
-        items: editItems.map((item) => ({
-          service_id: item.service_id,
-          qty: 1,
-        })),
+        ...(editItemsChanged && {
+          items: editItems.map((item) => ({
+            service_id: item.service_id,
+            qty: 1,
+          })),
+        }),
       };
 
       await updateOrder(editOrder.id, payload);
@@ -835,14 +887,15 @@ export default function Orders() {
       setEditOpen(false);
       setEditOrder(null);
       setEditItems([]);
+      setEditItemsChanged(false);
 
       await fetchOrders(page);
 
       toast.success("Order updated successfully.");
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("UPDATE ERROR:", err);
 
-      toast.error(err.response?.data?.message || "Failed to update order.");
+      toast.error(getErrorMessage(err, "Failed to update order."));
     } finally {
       setSubmitting(false);
     }
@@ -868,10 +921,10 @@ export default function Orders() {
       setCancelId(null);
 
       toast.success("Order cancelled successfully.");
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("CANCEL ORDER ERROR:", err);
 
-      toast.error(err.response?.data?.message || "Failed to cancel order.");
+      toast.error(getErrorMessage(err, "Failed to cancel order."));
     } finally {
       setCancelSubmitting(false);
     }
@@ -886,10 +939,10 @@ export default function Orders() {
       setDeleteId(null);
 
       toast.success("Order deleted successfully.");
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("DELETE ORDER ERROR:", err);
 
-      toast.error(err.response?.data?.message || "Failed to delete order.");
+      toast.error(getErrorMessage(err, "Failed to delete order."));
     }
   };
 
@@ -1042,7 +1095,7 @@ export default function Orders() {
 
                                 <span className="text-xs text-muted-foreground">
                                   {customer.phone ||
-                                    customer.email ||
+                                    customer.user?.email ||
                                     "No contact information"}
                                 </span>
                               </button>
@@ -1879,13 +1932,16 @@ export default function Orders() {
 
                         <p className="text-xs text-muted-foreground">
                           Qty {item.qty} ×{" "}
-                          {formatRupiah(Number(item.services?.price ?? 0))}
+                          {formatRupiah(
+                            Number(item.subtotal ?? 0) / (item.qty || 1),
+                          )}{" "}
+                          (harga saat order)
                         </p>
                       </div>
 
                       <p className="font-bold">
                         {formatRupiah(
-                          Number(item.services?.price ?? 0) * (item.qty ?? 1),
+                          Number(item.subtotal ?? 0),
                         )}
                       </p>
                     </div>
