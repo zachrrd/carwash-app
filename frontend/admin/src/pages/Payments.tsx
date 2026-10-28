@@ -49,7 +49,6 @@ export default function Payments() {
 
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [totalPayments, setTotalPayments] = useState(0);
 
   const [selectedPayment, setSelectedPayment] =
     useState<Payment | null>(null);
@@ -82,9 +81,7 @@ export default function Payments() {
         const paymentData = paymentResponse.data.data;
 
         setPayments(paymentData.data ?? []);
-        setTotalPayments(
-          paymentData.pagination?.total ?? 0,
-        );
+
         setTotalPages(
           paymentData.pagination?.totalPages ?? 1,
         );
@@ -536,8 +533,9 @@ export default function Payments() {
                             <p className="text-xs text-muted-foreground">
                               {item.qty} ×{" "}
                               {formatCurrency(
-                                item.services.price,
-                              )}
+                                Number(item.subtotal) / (Number(item.qty) || 1),
+                              )}{" "}
+                              (harga saat order)
                             </p>
                           </div>
 

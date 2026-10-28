@@ -370,7 +370,10 @@ export default function InvoiceDetail() {
                       </p>
 
                       <p className="mt-0.5 text-[11px] text-slate-500">
-                        {formatRupiah(item.services?.price || 0)}
+                        {formatRupiah(
+                          Number(item.subtotal) / (item.qty || 1),
+                        )}{" "}
+                        / unit saat order
                       </p>
                     </div>
 

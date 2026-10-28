@@ -80,12 +80,12 @@ export interface CreateOrder {
 }
 
 export interface UpdateOrder {
-  customer_id: number;
-  vehicle_id: number;
-  staff_id: number | null;
-  check_in_time: string | null;
+  customer_id?: number;
+  vehicle_id?: number;
+  staff_id?: number | null;
+  check_in_time?: string | null;
 
-  items: {
+  items?: {
     service_id: number;
     qty: number;
   }[];
@@ -104,5 +104,6 @@ export interface OrderPagination {
 
 export interface GetOrdersResponse {
   orders: Order[];
+  data?: Order[];
   pagination: OrderPagination;
 }

@@ -1003,7 +1003,10 @@ export default function OrderDetail() {
 
                       <span>
                         {item.qty || 1} x{" "}
-                        {formatRupiah(item.services?.price || 0)}
+                        {formatRupiah(
+                          Number(item.subtotal) / (item.qty || 1),
+                        )}{" "}
+                        (harga saat order)
                       </span>
                     </div>
                   </div>
